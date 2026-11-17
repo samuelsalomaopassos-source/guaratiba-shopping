@@ -79,7 +79,7 @@ void main(){
   const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = {}; ["uRes", "uTime", "uSun", "uElev", "uNight", "uMoon", "uMoonVis", "uScroll", "uHorizon"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
   const st = { sun: [.5, .7], elev: .8, night: 0, moon: [.5, .7], moonVis: 0, scroll: 0, horizon: .6 };
-  const escala = matchMedia("(max-width:700px)").matches ? .32 : .4;
+  let escala = matchMedia("(max-width:700px)").matches ? .3 : .32, intervalo = 66;
   function tam() {
     const w = Math.round(innerWidth * escala), h = Math.round(innerHeight * escala);
     if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
@@ -90,7 +90,7 @@ void main(){
   function frame(now) {
     requestAnimationFrame(frame);
     if (parado || document.hidden) return;
-    if (now - last < 50) return; last = now; // ~20 fps: as nuvens andam devagar
+    if (now - last < intervalo) return; last = now; // ~15 fps: as nuvens andam devagar
     const t = reduz ? 0 : (now - t0) / 1000;
     gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uTime, t);
     gl.uniform2f(U.uSun, st.sun[0], st.sun[1]); gl.uniform1f(U.uElev, st.elev); gl.uniform1f(U.uNight, st.night);
@@ -100,5 +100,6 @@ void main(){
   }
   requestAnimationFrame(frame);
   document.documentElement.classList.add("ceu-gl");
-  return { ok: true, set(o) { Object.assign(st, o); }, pausa(v) { parado = v; } };
+  return { ok: true, set(o) { Object.assign(st, o); }, pausa(v) { parado = v; },
+    leve() { escala = .22; intervalo = 110; tam(); } };
 })();

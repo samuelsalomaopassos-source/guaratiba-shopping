@@ -602,6 +602,19 @@ if ("IntersectionObserver" in window) {
   document.querySelectorAll(".loja-baia,.bay-grupo,.bay-praca").forEach(b => io.observe(b));
 } else document.querySelectorAll(".loja-baia").forEach(b => b.classList.add("vista"));
 
+/* qualidade adaptativa: se o aparelho não segura a fluidez, alivia céu e vento */
+(() => {
+  let n = 0, t0 = 0;
+  function conta(t) {
+    if (!t0) t0 = t;
+    n++;
+    if (t - t0 < 2500) return requestAnimationFrame(conta);
+    const fps = n / ((t - t0) / 1000);
+    if (fps < 45 && !document.hidden) { document.documentElement.classList.add("leve"); Ceu.leve && Ceu.leve(); }
+  }
+  setTimeout(() => requestAnimationFrame(conta), 1200);
+})();
+
 /* ---------- início ---------- */
 aplicarHora();
 addEventListener("resize", aplicarHora);

@@ -80,6 +80,7 @@ a{color:inherit}
 .gl{position:absolute;inset:0;transform-origin:50% 100%;will-change:transform;filter:brightness(calc(.4 + var(--dia) * .6));animation:vento 3.2s ease-in-out infinite alternate}
 .gl1{animation-duration:2.7s;animation-delay:-1.2s}.gl2{animation-duration:3.8s;animation-delay:-2.1s}
 .gl0{animation-duration:4.4s}
+html.leve .gl,html.leve .pl-copa2,html.leve .palm.balanca,html.leve .passaros i{animation:none!important}
 @keyframes vento{from{transform:skewX(-3deg)}to{transform:skewX(4deg)}}
 @media (min-width:1100px){ .grama-frente{height:10vh} }
 .canteiro-totem,.canteiro-praca{position:absolute;z-index:7;pointer-events:none}
@@ -389,11 +390,12 @@ body.entrando::after{opacity:1}
 .loja-vizinhas strong{display:block;font-size:19px;margin-top:4px}
 .loja-vizinhas .prox{text-align:right}
 .loja-corpo > *{animation:sobe .7s var(--ease) both}
-.loja-corpo > :nth-child(1){animation-delay:.6s}
-.loja-corpo > :nth-child(2){animation-delay:.68s}
-.loja-corpo > :nth-child(3){animation-delay:.76s}
-.loja-corpo > :nth-child(4){animation-delay:.84s}
-.loja-placa{animation:placaEntra .9s cubic-bezier(.2,.9,.25,1.1) .5s both!important}
+.loja-corpo > :nth-child(1){animation-delay:.75s}
+.loja-corpo > :nth-child(2){animation-delay:.83s}
+.loja-corpo > :nth-child(3){animation-delay:.91s}
+.loja-corpo > :nth-child(4){animation-delay:.99s}
+.loja-placa{animation:placaEntra .9s cubic-bezier(.2,.9,.25,1.1) .62s both!important}
+.loja.trocando .loja-placa{animation-delay:0s!important}
 @keyframes placaEntra{from{opacity:0;transform:scale(.82) translateY(16px)}to{opacity:1;transform:none}}
 .loja.trocando .loja-corpo > *{animation-delay:0s}
 @media (min-width:900px){
