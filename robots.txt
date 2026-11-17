@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://samuelsalomaopassos-source.github.io/guaratiba-shopping/sitemap.xml

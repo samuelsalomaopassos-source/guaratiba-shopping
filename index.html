@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA</title>
+<meta name="description" content="Caminhe pela varanda do Guaratiba Shopping, na Praia de Guaratiba, em Prado (BA): 26 lojas, do café da manhã ao último brinde, com horário de cada uma em tempo real.">
+<meta name="theme-color" content="#1E3A2F">
+<meta property="og:title" content="Guaratiba Shopping · A Varanda do Sol">
+<meta property="og:description" content="26 lojas numa varanda só, na Praia de Guaratiba, Prado-BA. Veja o que está aberto agora.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://samuelsalomaopassos-source.github.io/guaratiba-shopping/assets/og.png">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#diretorio-lista">Pular para a lista de lojas</a>
+
+<!-- Céu (fixo): cor do horário, sol do logo, lua, estrelas, coqueiros -->
+<div class="sky" id="sky" aria-hidden="true">
+  <div class="stars" id="stars"></div>
+  <div class="palms" id="palms"></div>
+</div>
+
+<!-- Barra superior -->
+<header class="bar" id="bar">
+  <a class="brand" href="#inicio" aria-label="Guaratiba Shopping, início">
+    <span class="brand-sun" id="brandSun"></span>
+    <span class="brand-name">Guaratiba<span>Shopping</span></span>
+  </a>
+  <div class="bar-actions">
+    <button class="btn-ghost" id="btnSom" type="button" aria-pressed="false" aria-label="Ligar o som ambiente">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path id="somIco" d="M4 9h4l5-4v14l-5-4H4z M16 9l5 6 M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="btn-lojas" id="btnLojas" type="button" aria-haspopup="dialog" aria-controls="diretorio">Lojas <span id="nLojas">26</span></button>
+  </div>
+</header>
+
+<!-- Relógio: o sol marca a hora -->
+<div class="clock" id="clock">
+  <label class="clock-label" for="hora"><span id="horaTxt">--h--</span> <span id="horaQuando">agora</span></label>
+  <input id="hora" type="range" min="6" max="24" step="0.25" value="12" aria-describedby="abertasTxt">
+  <button class="clock-now" id="btnAgora" type="button" hidden>Agora</button>
+</div>
+
+<!-- Sol e lua (acima da varanda para poderem ser arrastados) -->
+<button class="sun" id="sun" type="button" aria-label="Sol: arraste para mudar a hora da visita" tabindex="-1"></button>
+<div class="moon" id="moon" aria-hidden="true"></div>
+
+<!-- A varanda -->
+<main class="walk" id="walk" tabindex="-1">
+  <div class="track" id="track">
+    <div class="roof" aria-hidden="true"></div>
+    <div class="fascia" aria-hidden="true"></div>
+    <div class="bunting" aria-hidden="true"></div>
+    <div class="bulbs" aria-hidden="true"></div>
+    <div class="floor" aria-hidden="true"></div>
+
+    <section class="bay bay-entrada" id="inicio" aria-labelledby="titulo">
+      <div class="entrada-texto">
+        <h1 id="titulo">Guaratiba Shopping</h1>
+        <p class="entrada-sub">26 lojas numa varanda só, a dois passos da Praia de Guaratiba, em Prado, Bahia.</p>
+        <p class="agora"><span class="agora-num" id="abertasN">--</span> <span class="agora-txt" id="abertasTxt">de 26 lojas abertas agora</span></p>
+        <button class="btn-primary" id="btnCaminhar" type="button">Caminhar pela varanda <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="totem" aria-hidden="true">
+        <div class="totem-sun" id="totemSun"></div>
+        <div class="totem-word">GUARATIBA</div>
+        <div class="totem-sub">SHOPPING</div>
+      </div>
+      <div class="palm-front" aria-hidden="true"></div>
+    </section>
+
+    <!-- baias geradas por app.js -->
+    <div id="bays" class="bays"></div>
+
+    <section class="bay bay-praca" id="praca" aria-labelledby="pracaTitulo">
+      <div class="pilar" aria-hidden="true"><i></i></div>
+      <div class="varal" aria-label="Fotos do Guaratiba Shopping">
+        <span class="corda-varal c1" aria-hidden="true"></span><span class="corda-varal c2" aria-hidden="true"></span>
+        <figure><img src="assets/fotos/fachada-dia.webp" alt="A varanda do Guaratiba Shopping de dia, com o telhado de telhas e o estacionamento" loading="lazy"><figcaption>A varanda de dia</figcaption></figure>
+        <figure><img src="assets/fotos/fachada-noite.webp" alt="A varanda iluminada à noite, com carros no estacionamento" loading="lazy"><figcaption>E de noite</figcaption></figure>
+        <figure><img src="assets/fotos/festa-criancas.webp" alt="Crianças dançando na festa do Dia das Crianças, sob a varanda" loading="lazy"><figcaption>Dia das Crianças</figcaption></figure>
+        <figure><img src="assets/fotos/acaraje-mesas.webp" alt="Pessoas nas mesas em frente ao Acarajé Costa Baiana" loading="lazy"><figcaption>Fim de tarde no acarajé</figcaption></figure>
+      </div>
+      <div class="praca-texto">
+        <h2 id="pracaTitulo">Música ao vivo toda sexta</h2>
+        <p>O único espaço coberto de entretenimento da região: praça de alimentação completa e, em frente à varanda, os shows, as festas e os eventos da temporada.</p>
+        <p class="praca-end">Av. Itália · Praia de Guaratiba, Prado-BA</p>
+        <div class="praca-acoes">
+          <a class="btn-primary" id="lnkMaps" href="#" target="_blank" rel="noopener noreferrer">Como chegar</a>
+          <a class="btn-secondary" id="lnkWa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp do shopping</a>
+          <a class="btn-secondary" id="lnkIg" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+        </div>
+        <button class="btn-link" id="btnVoltarInicio" type="button"><span aria-hidden="true">←</span> Voltar ao começo da varanda</button>
+        <p class="credito">Experiência digital por OFFSET studio</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<button class="nav-arrow prev" id="arrPrev" type="button" aria-label="Voltar pela varanda"><span aria-hidden="true">←</span></button>
+<button class="nav-arrow next" id="arrNext" type="button" aria-label="Seguir pela varanda"><span aria-hidden="true">→</span></button>
+
+<!-- Loja aberta (a porta abre) -->
+<div class="loja" id="loja" role="dialog" aria-modal="true" aria-labelledby="lojaNome" hidden>
+  <div class="loja-portas" aria-hidden="true"><span class="folha esq"></span><span class="folha dir"></span></div>
+  <div class="loja-scroll" id="lojaScroll" tabindex="-1">
+    <div class="loja-topo">
+      <button class="btn-voltar" id="lojaFechar" type="button"><span aria-hidden="true">←</span> Varanda</button>
+      <div class="loja-setas">
+        <button type="button" id="lojaAnt" aria-label="Loja anterior"><span aria-hidden="true">←</span></button>
+        <button type="button" id="lojaProx" aria-label="Próxima loja"><span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+    <div class="loja-corpo" id="lojaCorpo"></div>
+  </div>
+</div>
+
+<!-- Diretório -->
+<div class="diretorio" id="diretorio" role="dialog" aria-modal="true" aria-labelledby="dirTitulo" hidden>
+  <div class="dir-painel">
+    <div class="dir-topo">
+      <h2 id="dirTitulo">Todas as lojas</h2>
+      <button class="btn-ghost" id="dirFechar" type="button" aria-label="Fechar a lista de lojas">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <label class="dir-busca"><span class="sr">Procurar loja ou produto</span>
+      <input id="busca" type="search" placeholder="Açaí, gás, biquíni, pastel…" autocomplete="off">
+    </label>
+    <div id="diretorio-lista" class="dir-lista"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<noscript>
+  <div class="noscript">
+    <h2>Guaratiba Shopping</h2>
+    <p>Av. Itália, Praia de Guaratiba · Prado, Bahia. Ative o JavaScript para caminhar pela varanda. Instagram: @shoppingguaratiba._</p>
+  </div>
+</noscript>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
