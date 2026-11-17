@@ -41,19 +41,30 @@ a{color:inherit}
 .palm{position:absolute;bottom:0}
 .palm svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .palm svg *{transform-box:view-box}
-.palm.balanca{transform-origin:50% 100%;will-change:transform;animation:longe var(--d,6s) ease-in-out infinite alternate}
-@keyframes longe{from{transform:rotate(-1.4deg)}to{transform:rotate(2deg)}}
+.palm.balanca{transform-origin:50% 100%;will-change:transform;animation:longe 9s cubic-bezier(.45,0,.4,1) infinite}
+@keyframes longe{0%,100%{transform:rotate(-.4deg)}14%{transform:rotate(1.2deg)}22%{transform:rotate(2.1deg)}30%{transform:rotate(1.3deg)}38%{transform:rotate(1.7deg)}54%{transform:rotate(.2deg)}68%{transform:rotate(-1deg)}84%{transform:rotate(-.2deg)}}
+/* vento: ciclo de 9s com rajada (sobe rápido, oscila, devolve devagar e passa um pouco do ponto) */
+.pl-corpo{transform-origin:50% 100%;will-change:transform;animation:verga 9s cubic-bezier(.45,0,.4,1) var(--dd,0s) infinite}
+.pl-copa{will-change:transform;animation:rajada 9s cubic-bezier(.45,0,.4,1) var(--dd,0s) infinite}
+@keyframes verga{0%,100%{transform:rotate(0)}16%{transform:rotate(.35deg)}26%{transform:rotate(.9deg)}34%{transform:rotate(.6deg)}42%{transform:rotate(.75deg)}58%{transform:rotate(.1deg)}72%{transform:rotate(-.35deg)}86%{transform:rotate(-.05deg)}}
+@keyframes rajada{0%,100%{transform:rotate(-.6deg)}12%{transform:rotate(1.2deg)}22%{transform:rotate(4.2deg)}29%{transform:rotate(2.6deg)}36%{transform:rotate(3.6deg)}44%{transform:rotate(2deg)}58%{transform:rotate(.3deg)}70%{transform:rotate(-2deg)}84%{transform:rotate(-.4deg)}}
+@keyframes vergaInv{0%,100%{transform:rotate(0)}16%{transform:rotate(-.35deg)}26%{transform:rotate(-.9deg)}34%{transform:rotate(-.6deg)}42%{transform:rotate(-.75deg)}58%{transform:rotate(-.1deg)}72%{transform:rotate(.35deg)}86%{transform:rotate(.05deg)}}
+@keyframes rajadaInv{0%,100%{transform:rotate(.6deg)}12%{transform:rotate(-1.2deg)}22%{transform:rotate(-4.2deg)}29%{transform:rotate(-2.6deg)}36%{transform:rotate(-3.6deg)}44%{transform:rotate(-2deg)}58%{transform:rotate(-.3deg)}70%{transform:rotate(2deg)}84%{transform:rotate(.4deg)}}
+.pl.inv .pl-corpo{animation-name:vergaInv}.pl.inv .pl-copa{animation-name:rajadaInv}
+.copa{position:absolute;aspect-ratio:1000/798;transform-origin:53% 54.7%}
+.copa .fr{left:0;top:0;width:100%;transform-origin:53% 54.7%;will-change:transform}
+.fr-e{animation:tremeE var(--fd,2.2s) ease-in-out var(--fo,0s) infinite alternate}
+.fr-d{animation:tremeD var(--fd,2.4s) ease-in-out var(--fo,0s) infinite alternate}
+.fr-c{animation:tremeC var(--fd,3.4s) ease-in-out var(--fo,0s) infinite alternate}
+@keyframes tremeE{from{transform:rotate(-2.4deg) scale(1.01,.975)}to{transform:rotate(1.6deg) scale(.995,1.01)}}
+@keyframes tremeD{from{transform:rotate(2.2deg) scale(1.01,.98)}to{transform:rotate(-1.8deg) scale(.995,1.01)}}
+@keyframes tremeC{from{transform:rotate(-1deg) translateY(.4%)}to{transform:rotate(1.1deg) translateY(-.3%)}}
 .pl,.pl-l{position:absolute;inset:0}
 .pl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .pl > svg,.pl > .pl-l > svg{filter:brightness(calc(1 - var(--noite) * .62))}
-.copa-img{position:absolute;height:auto;max-width:none;transform-origin:53% 54.7%;user-select:none;pointer-events:none;
+.copa-img{position:absolute;height:auto;max-width:none;transform-origin:53% 54.7%;display:block;user-select:none;pointer-events:none;
   filter:brightness(calc(var(--tom,1) * (1 - var(--noite) * .72))) saturate(calc(1.05 - var(--noite) * .5)) hue-rotate(var(--hue,0deg)) drop-shadow(0 6px 6px rgba(0,0,0,.18))}
 .copa-img.longe{filter:brightness(calc(.62 * (1 - var(--noite) * .7))) saturate(.7) contrast(.92)}
-.pl-copa{will-change:transform;animation:sopra var(--d,6s) ease-in-out var(--dd,0s) infinite}
-.pl-copa2{will-change:transform;animation:fronde var(--ft,3s) ease-in-out infinite alternate}
-@keyframes tronco{from{transform:rotate(-.8deg)}to{transform:rotate(1.4deg)}}
-@keyframes sopra{0%{transform:rotate(-3deg)}22%{transform:rotate(2deg)}38%{transform:rotate(5.5deg)}46%{transform:rotate(1deg)}60%{transform:rotate(3.5deg)}80%{transform:rotate(-1.5deg)}100%{transform:rotate(-3deg)}}
-@keyframes fronde{from{transform:rotate(-1.8deg) scale(1,.985)}to{transform:rotate(2.4deg) scale(1.02,1)}}
 .passaros{position:absolute;left:0;top:14svh;width:100%;height:20svh;opacity:var(--dia);pointer-events:none}
 .passaros i{position:absolute;left:-60px;width:22px;height:10px;animation:voa var(--t,26s) linear infinite;animation-delay:var(--a,0s)}
 .passaros i::before,.passaros i::after{content:"";position:absolute;top:4px;width:11px;height:2px;background:#22303a;border-radius:2px;animation:bate .5s ease-in-out infinite alternate}
@@ -84,7 +95,7 @@ a{color:inherit}
 .gl{position:absolute;inset:0;transform-origin:50% 100%;will-change:transform;filter:brightness(calc(.4 + var(--dia) * .6));animation:vento 3.2s ease-in-out infinite alternate}
 .gl1{animation-duration:2.7s;animation-delay:-1.2s}.gl2{animation-duration:3.8s;animation-delay:-2.1s}
 .gl0{animation-duration:4.4s}
-html.leve .gl,html.leve .pl-copa2,html.leve .palm.balanca,html.leve .passaros i{animation:none!important}
+html.leve .gl,html.leve .fr,html.leve .pl-corpo,html.leve .palm.balanca,html.leve .passaros i{animation:none!important}
 @keyframes vento{from{transform:skewX(-3deg)}to{transform:skewX(4deg)}}
 @media (min-width:1100px){ .grama-frente{height:10vh} }
 .canteiro-totem,.canteiro-praca{position:absolute;z-index:7;pointer-events:none}

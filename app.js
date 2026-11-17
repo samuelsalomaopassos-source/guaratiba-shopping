@@ -56,14 +56,16 @@ function coqueiro(o = {}) {
   const k = .88 + r() * .24, W = 190 * k, H = W * .798;
   const left = (cx - W * .53) / 2, top = (cy - H * .547) / 3;
   const rot = (lean / 20) * 6 + (r() - .5) * 8, tom = (.9 + r() * .2).toFixed(2), hue = ((r() - .5) * 14).toFixed(0);
-  const img = `<img class="copa-img${longe ? " longe" : ""}" src="assets/coqueiro-copa${longe ? "-p" : ""}.webp" alt="" decoding="async" draggable="false"
-    style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${(W / 2).toFixed(2)}%;transform:rotate(${rot.toFixed(1)}deg)${r() > .5 ? " scaleX(-1)" : ""};--tom:${tom};--hue:${hue}deg">`;
+  const estilo = `left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${(W / 2).toFixed(2)}%;transform:rotate(${rot.toFixed(1)}deg)${r() > .5 ? " scaleX(-1)" : ""};--tom:${tom};--hue:${hue}deg`;
   const flip = o.inv ? "transform:scaleX(-1);" : "";
   const ox = (cx / 2).toFixed(1) + "%", oy = (cy / 3).toFixed(1) + "%";
-  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tr)}<div class="pl-l" style="transform-origin:${ox} ${oy}">${img}</div></div>`;
-  return `<div class="pl" style="${flip}"><div class="pl-l">${svg(tr)}</div>
-    <div class="pl-l pl-copa" style="transform-origin:${ox} ${oy};--d:${(5 + r() * 3).toFixed(1)}s;--dd:${(-r() * 5).toFixed(1)}s">
-      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${img}</div></div></div>`;
+  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tr)}<div class="pl-l"><img class="copa-img longe" src="assets/coqueiro-copa-p.webp" alt="" decoding="async" draggable="false" style="${estilo}"></div></div>`;
+  // perto: o tronco verga a partir da base, a copa recebe as rajadas e cada lado das folhas tremula no seu ritmo
+  const f = (n, d) => `<img class="copa-img fr fr-${n}" src="assets/copa-${n}.webp" alt="" decoding="async" draggable="false" style="--fd:${d.toFixed(2)}s;--fo:${(-r() * 3).toFixed(2)}s">`;
+  const dd = (-(o.seed || 1) % 6 * .45).toFixed(2) + "s";
+  return `<div class="pl${o.inv ? " inv" : ""}" style="${flip}"><div class="pl-l pl-corpo" style="--dd:${dd}">${svg(tr)}
+    <div class="pl-l pl-copa" style="transform-origin:${ox} ${oy};--dd:${dd}">
+      <div class="copa" style="${estilo}">${f("c", 3.2 + r())}${f("e", 1.9 + r() * .7)}${f("d", 2.2 + r() * .7)}</div></div></div></div>`;
 }
 
 /* grama: lâminas finas em tons de verde, em três grupos que balançam com defasagem */
@@ -180,7 +182,7 @@ $("#nLojas").textContent = LOJAS.length;
   let p = "";
   for (let i = 0; i < 13; i++) {
     const x = i * 30 + ((i * 37) % 12), h = 70 + ((i * 53) % 30), far = i % 3 === 0;
-    p += `<div class="palm balanca" style="--d:${(5 + (i % 4)).toFixed(1)}s;animation-delay:${(-i * 1.3).toFixed(1)}s;left:${x}vw;height:${far ? h * .8 : h}%;width:${(h * .14).toFixed(1)}svh;opacity:${far ? .78 : 1}">${coqueiro({ cor: far ? "#22312b" : "#121c17", seed: i + 3, inv: i % 2 })}</div>`;
+    p += `<div class="palm balanca" style="--d:${(5 + (i % 4)).toFixed(1)}s;animation-delay:${(-18 + x * .03 + (i % 3) * .25).toFixed(2)}s;left:${x}vw;height:${far ? h * .8 : h}%;width:${(h * .14).toFixed(1)}svh;opacity:${far ? .78 : 1}">${coqueiro({ cor: far ? "#22312b" : "#121c17", seed: i + 3, inv: i % 2 })}</div>`;
   }
   $("#palms").innerHTML = p;
   let b = "";
