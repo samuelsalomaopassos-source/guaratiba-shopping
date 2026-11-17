@@ -285,7 +285,7 @@ body.escuro .credito{color:var(--creme-claro)}
 /* ---------- LOJA ABERTA ---------- */
 .loja{position:fixed;inset:0;z-index:40;perspective:1800px;transition:opacity .4s var(--ease)}
 .loja.fechando{opacity:0}
-.loja-portas{position:absolute;inset:0;display:flex;z-index:2;pointer-events:none}
+.loja-portas{position:absolute;inset:0;display:flex;z-index:5;pointer-events:none}
 .loja-portas::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(255,236,190,.9),rgba(255,220,150,0) 60%);opacity:0;animation:luz .9s ease-out .15s both}
 @keyframes luz{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
 .folha{position:relative;flex:1;animation:.95s cubic-bezier(.55,.05,.25,1) .05s both;
