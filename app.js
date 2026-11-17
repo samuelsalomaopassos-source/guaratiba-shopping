@@ -56,10 +56,16 @@ function coqueiro(o = {}) {
     }
     const c = i % 3 === 0 ? cor2 : cor;
     const lado = Math.cos(ang) < 0 ? -1 : 1;
-    folhas += `<g class="fronde" style="transform-origin:${cx.toFixed(1)}px ${cy}px;--fd:${(-r() * 4).toFixed(2)}s;--ft:${(2.6 + r() * 1.8).toFixed(2)}s;--fa:${(lado * (2.5 + r() * 4)).toFixed(1)}deg"><path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
+    folhas += false ? `<g class="fronde" style="transform-origin:${cx.toFixed(1)}px ${cy}px;--fd:${(-r() * 4).toFixed(2)}s;--ft:${(2.6 + r() * 1.8).toFixed(2)}s;--fa:${(lado * (2.5 + r() * 4)).toFixed(1)}deg"><path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>` : `<path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
   }
   const cocos = `<g fill="${o.coco || cor}"><circle cx="${cx - 5}" cy="${cy + 6}" r="5"/><circle cx="${cx + 5}" cy="${cy + 7}" r="5"/><circle cx="${cx}" cy="${cy + 11}" r="4.6"/></g>`;
-  return `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="transform:scaleX(${o.inv ? -1 : 1})"><g class="tronco" style="--d:${(6 + r() * 3).toFixed(1)}s">${tronco}<g class="copa" style="transform-origin:${cx.toFixed(1)}px ${cy + 30}px;--d:${(5 + r() * 4).toFixed(1)}s;--dd:${(-r() * 6).toFixed(2)}s">${folhas}${cocos}</g></g></svg>`;
+  const svg = c => `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${c}</svg>`;
+  const flip = o.inv ? "transform:scaleX(-1);" : "";
+  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tronco + folhas + cocos)}</div>`;
+  const ox = (cx / 2).toFixed(1) + "%", oy = (cy / 3).toFixed(1) + "%";
+  return `<div class="pl" style="${flip}"><div class="pl-l">${svg(tronco)}</div>
+    <div class="pl-l pl-copa" style="transform-origin:${ox} ${oy};--d:${(5 + r() * 3).toFixed(1)}s;--dd:${(-r() * 5).toFixed(1)}s">
+      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${svg(folhas + cocos)}</div></div></div>`;
 }
 
 /* grama: lâminas finas em tons de verde, em três grupos que balançam com defasagem */
@@ -77,16 +83,17 @@ function grama(o = {}) {
   for (let i = 0; i < (o.arbustos || 0); i++) {
     const x = (i + .5) * W / o.arbustos + (r() - .5) * 60, rr = H * (.5 + r() * .22);
     let f = "";
-    for (let k = 0; k < 280; k++) {
+    for (let k = 0; k < 200; k++) {
       const a = Math.PI + r() * Math.PI, d = rr * Math.sqrt(r());
       const lx = x + Math.cos(a) * d * 1.35, ly = H + Math.sin(a) * d;
       const alt = (H - ly) / rr; // folhas de cima mais claras
       const tom = folhaTons[Math.min(5, Math.floor(alt * 4 + r() * 2))];
       f += `<ellipse cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" rx="${(3.5 + r() * 4.5).toFixed(1)}" ry="${(2 + r() * 2.2).toFixed(1)}" transform="rotate(${(r() * 180).toFixed(0)} ${lx.toFixed(1)} ${ly.toFixed(1)})" fill="${tom}"/>`;
     }
-    arbustos += `<g class="arbusto" style="animation-delay:${(-r() * 4).toFixed(1)}s">${f}</g>`;
+    arbustos += `<g>${f}</g>`;
   }
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><g class="lamina l0">${grupos[0]}</g>${arbustos}<g class="lamina l1">${grupos[1]}</g><g class="lamina l2">${grupos[2]}</g></svg>`;
+  const svg = c => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${c}</svg>`;
+  return `<div class="gl gl0">${svg(grupos[0] + arbustos)}</div><div class="gl gl1">${svg(grupos[1])}</div><div class="gl gl2">${svg(grupos[2])}</div>`;
 }
 
 /* ---------- horários ---------- */
@@ -134,7 +141,7 @@ GRUPOS.forEach(g => {
   html += `<section class="bay bay-grupo" id="g-${g.id}" aria-labelledby="h-${g.id}">
     <div class="pilar"><span class="mao e"></span><span class="mao d"></span><i></i></div>
     <div class="grupo-tabua"><h2 id="h-${g.id}">${g.titulo}</h2><p>${g.linha}</p></div>
-    <div class="vaso"><div class="palm">${coqueiro({ cor: "#2f5a35", cor2: "#3d6e3f", tronco: "#6b5640", coco: "#5a6b2e", seed: g.titulo.length })}</div></div>
+    <div class="vaso"><div class="palm">${coqueiro({ anima: true, cor: "#2f5a35", cor2: "#3d6e3f", tronco: "#6b5640", coco: "#5a6b2e", seed: g.titulo.length })}</div></div>
     <p class="grupo-chao">${LOJAS.filter(l => l.grupo === g.id).length} lojas nesta parte</p>
   </section>`;
   LOJAS.filter(l => l.grupo === g.id).forEach(l => {
@@ -156,13 +163,14 @@ baysEl.innerHTML = html;
 $("#brandSun").innerHTML = sol();
 $("#totemSun").innerHTML = sol("#F4F1EA");
 $("#sun").innerHTML = sol("#FFF4D6", "sol");
-document.querySelectorAll(".palm-front").forEach((el, i) => el.innerHTML = `<div class="palm" style="inset:0">${coqueiro({ cor: "#2a5232", cor2: "#3b6a3c", tronco: "#7a634a", coco: "#56662b", seed: 7 + i * 5, inv: i === 1 })}</div>`);
+document.querySelectorAll(".palm-front").forEach((el, i) => el.innerHTML = `<div class="palm" style="inset:0">${coqueiro({ anima: true, cor: "#2a5232", cor2: "#3b6a3c", tronco: "#7a634a", coco: "#56662b", seed: 7 + i * 5, inv: i === 1 })}</div>`);
 $("#frontaoSol").innerHTML = sol();
 $("#lnkMaps").href = S.maps;
 /* canteiros de grama em primeiro plano (paralaxe mais rápida que a varanda) */
 const TILE = 640;
+const tileGrama = grama({ w: TILE, h: 120, n: 300, seed: 11, arbustos: 3 });
 $("#gramaFrente").innerHTML = Array.from({ length: Math.ceil(innerWidth / TILE) + 2 }, (_, i) =>
-  `<div class="gf-tile" style="left:${i * TILE}px">${grama({ w: TILE, h: 120, n: 320, seed: 11, arbustos: 3 })}</div>`).join("");
+  `<div class="gf-tile" style="left:${i * TILE}px">${tileGrama}</div>`).join("");
 document.querySelectorAll("[data-grama]").forEach((el, i) => el.innerHTML = grama({ w: 400, h: 70, n: 170, seed: 20 + i, arbustos: +el.dataset.grama || 0 }));
 $("#lnkWa").href = `https://wa.me/${S.whatsapp}`;
 $("#lnkIg").href = `https://instagram.com/${S.instagram}`;
@@ -172,9 +180,9 @@ $("#nLojas").textContent = LOJAS.length;
 /* coqueiros distantes (silhueta contra o céu) e pássaros */
 (() => {
   let p = "";
-  for (let i = 0; i < 20; i++) {
-    const x = i * 20 + ((i * 37) % 9), h = 70 + ((i * 53) % 30), far = i % 3 === 0;
-    p += `<div class="palm" style="left:${x}vw;height:${far ? h * .8 : h}%;width:${(h * .14).toFixed(1)}svh;opacity:${far ? .78 : 1}">${coqueiro({ cor: far ? "#22312b" : "#121c17", seed: i + 3, inv: i % 2 })}</div>`;
+  for (let i = 0; i < 13; i++) {
+    const x = i * 30 + ((i * 37) % 12), h = 70 + ((i * 53) % 30), far = i % 3 === 0;
+    p += `<div class="palm balanca" style="--d:${(5 + (i % 4)).toFixed(1)}s;animation-delay:${(-i * 1.3).toFixed(1)}s;left:${x}vw;height:${far ? h * .8 : h}%;width:${(h * .14).toFixed(1)}svh;opacity:${far ? .78 : 1}">${coqueiro({ cor: far ? "#22312b" : "#121c17", seed: i + 3, inv: i % 2 })}</div>`;
   }
   $("#palms").innerHTML = p;
   let b = "";
@@ -208,7 +216,12 @@ function posAstro(h, ini, fim) {
   return { x: W * (0.08 + 0.84 * t), y: base - Math.sin(Math.PI * t) * (base - topo), vis: t >= 0 && t <= 1 };
 }
 
-const GRADE = [[0,"#3e4c7e"],[5,"#46548a"],[5.8,"#8f7fa6"],[6.4,"#f2c3a6"],[7.4,"#ffffff"],[16.2,"#ffffff"],[17.2,"#ffe6c8"],[18,"#f7b98e"],[18.7,"#b79ab6"],[19.5,"#59649a"],[20.5,"#3e4c7e"],[24,"#3e4c7e"]];
+const GRADE = [[0,[8,14,44,.56]],[5,[8,14,44,.54]],[5.8,[70,58,120,.32]],[6.4,[255,150,110,.16]],[7.4,[255,255,255,0]],[16.2,[255,255,255,0]],[17.2,[255,170,90,.12]],[18,[255,120,60,.2]],[18.7,[110,70,130,.3]],[19.5,[30,36,90,.42]],[20.5,[8,14,44,.56]],[24,[8,14,44,.56]]];
+function gradeCor(h) {
+  for (let i = 0; i < GRADE.length - 1; i++) { const [a, A] = GRADE[i], [b, B] = GRADE[i + 1];
+    if (h >= a && h <= b) { const t = (h - a) / (b - a), m = A.map((v, k) => v + (B[k] - v) * t); return `rgba(${m.slice(0, 3).map(Math.round).join(",")},${m[3].toFixed(3)})`; } }
+  return "rgba(0,0,0,0)";
+}
 function interp(tab, h) {
   for (let i = 0; i < tab.length - 1; i++) { const [a, ca] = tab[i], [b, cb] = tab[i + 1];
     if (h >= a && h <= b) { const t = (h - a) / (b - a), A = hex(ca), B = hex(cb); return `rgb(${A.map((v, k) => Math.round(v + (B[k] - v) * t)).join(",")})`; } }
@@ -226,7 +239,7 @@ function aplicarHora() {
   root.setProperty("--noite", n.toFixed(3));
   root.setProperty("--dia", dia.toFixed(3));
   root.setProperty("--dim", (1 - n * 0.58).toFixed(3));
-  root.setProperty("--grade", interp(GRADE, hora));
+  root.setProperty("--grade", gradeCor(hora));
   document.body.classList.toggle("escuro", n > 0.55);
 
   const W = innerWidth, H = innerHeight;
@@ -304,10 +317,11 @@ walk.addEventListener("wheel", e => {
   });
 }, { passive: false });
 let rafP = 0;
+const plano = $(".chao-plano");
 function aoRolar() {
   rafP = 0;
   const x = walk.scrollLeft;
-  document.documentElement.style.setProperty("--scroll", x.toFixed(1));
+  plano.style.transform = `rotateX(-52deg) translate3d(${(-(x % 260)).toFixed(1)}px,0,0)`;
   if (!reduz) {
     $("#palms").style.transform = `translate3d(${(-x * 0.22).toFixed(1)}px,0,0)`;
     $("#gramaFrente").style.transform = `translate3d(${(-((x * 1.35) % TILE)).toFixed(1)}px,0,0)`;
@@ -398,18 +412,31 @@ function abrirLoja(slug, { empurrar = true } = {}) {
       walk.style.transformOrigin = `${c.cx}px ${c.cy}px`;
       lojaEl.classList.add("de-vitrine");
     } else lojaEl.classList.remove("de-vitrine");
+    document.querySelectorAll(".loja-baia.acesa").forEach(b => b.classList.remove("acesa"));
+    document.getElementById("b-" + slug)?.classList.add("acesa");
     lojaEl.hidden = false;
     void lojaEl.offsetWidth;
-    lojaEl.classList.add("cheia");
-    document.body.classList.add("entrando");
+    requestAnimationFrame(() => { lojaEl.classList.add("cheia"); document.body.classList.add("entrando"); });
+    setTimeout(() => { lojaEl.classList.add("cheia"); document.body.classList.add("entrando"); }, 60);
     Som.porta(); Ceu.pausa && Ceu.pausa(true);
   }
   setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 700);
 }
+function recorteSemZoom(slug) {
+  const sky = $("#sky");
+  walk.style.transition = sky.style.transition = "none";
+  document.body.classList.remove("entrando");
+  const c = recorteDaVitrine(slug);
+  if (c) walk.style.transformOrigin = `${c.cx}px ${c.cy}px`;
+  document.body.classList.add("entrando");
+  void walk.offsetWidth;
+  walk.style.transition = sky.style.transition = "";
+  return c;
+}
 function fecharLoja({ voltar = true } = {}) {
   if (lojaEl.hidden) return;
   const slug = atual?.slug;
-  const c = slug && recorteDaVitrine(slug);
+  const c = slug && recorteSemZoom(slug);
   if (c && !reduz) {
     lojaEl.style.setProperty("--ct", c.t + "px"); lojaEl.style.setProperty("--cr", c.r + "px");
     lojaEl.style.setProperty("--cb", c.b + "px"); lojaEl.style.setProperty("--cl", c.l + "px");
@@ -417,8 +444,9 @@ function fecharLoja({ voltar = true } = {}) {
   } else lojaEl.classList.remove("de-vitrine");
   lojaEl.classList.add("saindo"); lojaEl.classList.remove("cheia");
   document.body.classList.remove("entrando");
+  setTimeout(() => document.querySelectorAll(".loja-baia.acesa").forEach(b => b.classList.remove("acesa")), 900);
   Ceu.pausa && Ceu.pausa(false);
-  setTimeout(() => { if (lojaEl.classList.contains("saindo")) { lojaEl.hidden = true; lojaEl.classList.remove("saindo", "trocando", "de-vitrine"); } }, reduz ? 0 : 760);
+  setTimeout(() => { if (lojaEl.classList.contains("saindo")) { lojaEl.hidden = true; lojaEl.classList.remove("saindo", "trocando", "de-vitrine"); } }, reduz ? 0 : 980);
   document.title = "Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA";
   if (voltar) history.pushState({}, "", location.pathname + location.search);
   const b = slug && document.getElementById("b-" + slug);

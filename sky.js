@@ -13,7 +13,7 @@ uniform vec2 uMoon; uniform float uMoonVis; uniform float uScroll; uniform float
 float h(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
   return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
-float fbm(vec2 p){float v=0.,a=.5;mat2 r=mat2(.8,.6,-.6,.8);for(int i=0;i<6;i++){v+=a*n(p);p=r*p*2.02+vec2(1.7,9.2);a*=.5;}return v;}
+float fbm(vec2 p){float v=0.,a=.5;mat2 r=mat2(.8,.6,-.6,.8);for(int i=0;i<4;i++){v+=a*n(p);p=r*p*2.02+vec2(1.7,9.2);a*=.5;}return v;}
 vec3 mix3(vec3 a,vec3 b,vec3 c,float t){return t<.5?mix(a,b,t*2.):mix(b,c,t*2.-1.);}
 void main(){
   vec2 uv=gl_FragCoord.xy/uRes; float asp=uRes.x/uRes.y;
@@ -44,19 +44,18 @@ void main(){
   // lua
   vec2 mp=vec2(uMoon.x*asp,uMoon.y); float md=distance(q,mp);
   float disc=smoothstep(.034,.03,md); float lit=smoothstep(.0,.02,distance(q,mp+vec2(.016,.008))-.028);
-  float crat=fbm((q-mp)*60.)*.25;
+  float crat=md<.04?n((q-mp)*120.)*.18:0.;
   col=mix(col,vec3(.93,.92,.86)-crat,disc*lit*uMoonVis);
   col+=vec3(.6,.7,.9)*exp(-md*9.)*.18*uMoonVis;
   // nuvens: duas camadas com deriva e paralaxe
   vec2 cp=vec2(q.x+uScroll*.00012+uTime*.006,q.y*2.4);
-  vec2 w=vec2(fbm(cp*1.3+uTime*.01),fbm(cp*1.3+7.1));
-  float c1=fbm(cp*2.1+w*1.6);
+  float wq=fbm(cp*1.3+uTime*.01);
+  float c1=fbm(cp*2.1+vec2(wq,wq*.7)*1.6);
   float cover=smoothstep(.52,.80,c1)*smoothstep(.0,.25,y)*(1.-smoothstep(.85,1.,y)*.4);
-  float c2=fbm(vec2(q.x*1.5+uScroll*.00005+uTime*.003,q.y*6.)+3.);
+  float c2=n(vec2(q.x*3.+uScroll*.0001+uTime*.006,q.y*10.)+3.)*.5+n(vec2(q.x*7.,q.y*22.)+9.)*.3;
   float wisp=smoothstep(.55,.78,c2)*.45*smoothstep(.1,.5,y);
   // luz nas nuvens: lado do sol mais claro, base mais escura
-  float shade=fbm(cp*2.1+w*1.6+normalize(vec2(sp.x-q.x,sp.y-q.y)+.0001)*.06);
-  float lightness=clamp(.65+(c1-shade)*6.,0.,1.2);
+  float lightness=clamp(.35+(c1-.5)*2.4+(1.-smoothstep(0.,1.2,d))*.35,0.,1.2);
   vec3 cDay=mix(vec3(.72,.76,.82),vec3(1.),lightness);
   vec3 cSet=mix(vec3(.45,.30,.38),vec3(1.,.66,.45),lightness);
   vec3 cNight=mix(vec3(.05,.07,.12),vec3(.16,.19,.27),lightness);
@@ -80,7 +79,7 @@ void main(){
   const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   const U = {}; ["uRes", "uTime", "uSun", "uElev", "uNight", "uMoon", "uMoonVis", "uScroll", "uHorizon"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
   const st = { sun: [.5, .7], elev: .8, night: 0, moon: [.5, .7], moonVis: 0, scroll: 0, horizon: .6 };
-  const escala = Math.min(1, (matchMedia("(max-width:700px)").matches ? .5 : .6));
+  const escala = matchMedia("(max-width:700px)").matches ? .32 : .4;
   function tam() {
     const w = Math.round(innerWidth * escala), h = Math.round(innerHeight * escala);
     if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
@@ -91,7 +90,7 @@ void main(){
   function frame(now) {
     requestAnimationFrame(frame);
     if (parado || document.hidden) return;
-    if (now - last < 33) return; last = now; // ~30 fps basta para o céu
+    if (now - last < 50) return; last = now; // ~20 fps: as nuvens andam devagar
     const t = reduz ? 0 : (now - t0) / 1000;
     gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uTime, t);
     gl.uniform2f(U.uSun, st.sun[0], st.sun[1]); gl.uniform1f(U.uElev, st.elev); gl.uniform1f(U.uNight, st.night);
