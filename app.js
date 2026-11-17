@@ -30,42 +30,72 @@ function sol(g = "#FBF5E8", centro = true) {
   return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${raios}${G}</svg>`;
 }
 function rnd(seed) { let x = seed * 9301 + 49297; return () => (x = (x * 9301 + 49297) % 233280) / 233280; }
-/* coqueiro procedural: tronco com anéis, folhas com folíolos caídos; copa balança */
+/* coqueiro procedural: tronco com volume e anéis, folhas com folíolos preenchidos (camada de trás mais escura),
+   uma folha seca e cachos de coco. Silhuetas distantes usam cor chapada; os de perto ganham gradientes. */
+let PALM_ID = 0;
 function coqueiro(o = {}) {
-  const r = rnd(o.seed || 1), cor = o.cor || "#17271f", cor2 = o.cor2 || cor, lean = (r() - .5) * 40;
-  const cx = 100 + lean, cy = 92;
-  let tronco = `<path d="M${96} 300 C ${98 + lean * .2} 220, ${cx - 6} 150, ${cx - 3} ${cy} L ${cx + 3} ${cy} C ${cx + 4} 150, ${104 + lean * .2} 220, ${106} 300 Z" fill="${o.tronco || cor}"/>`;
-  let aneis = "";
-  for (let y = 290; y > cy + 6; y -= 7) { const t = (300 - y) / (300 - cy); const x = 101 + (cx - 101) * Math.pow(t, 1.6); aneis += `M${x - 4} ${y} q4 2 8 0 `; }
-  tronco += `<path d="${aneis}" stroke="rgba(0,0,0,.28)" stroke-width="1.1" fill="none"/>`;
-  let folhas = "";
-  const n = 11;
-  for (let i = 0; i < n; i++) {
-    const ang = -Math.PI + (i / (n - 1)) * Math.PI + (r() - .5) * .25;
-    const len = 62 + r() * 34, droop = 26 + r() * 30;
-    const ex = cx + Math.cos(ang) * len * 1.15, ey = cy + Math.sin(ang) * len * .55 + droop;
-    const c1x = cx + Math.cos(ang) * len * .45, c1y = cy + Math.sin(ang) * len * .7 - 12;
-    let d = `M${cx} ${cy} Q ${c1x} ${c1y} ${ex} ${ey}`, fol = "";
-    for (let k = 3; k <= 26; k++) {
-      const t = k / 27, u = 1 - t;
-      const px = u * u * cx + 2 * u * t * c1x + t * t * ex, py = u * u * cy + 2 * u * t * c1y + t * t * ey;
-      const tx = 2 * u * (c1x - cx) + 2 * t * (ex - c1x), ty = 2 * u * (c1y - cy) + 2 * t * (ey - c1y);
-      const L = Math.hypot(tx, ty), nx = -ty / L, ny = tx / L;
-      const fl = (1 - t * .75) * (14 + r() * 4);
-      fol += `M${px.toFixed(1)} ${py.toFixed(1)} l${(nx * fl + tx / L * 3).toFixed(1)} ${(Math.abs(ny * fl) + 6).toFixed(1)} M${px.toFixed(1)} ${py.toFixed(1)} l${(-nx * fl + tx / L * 3).toFixed(1)} ${(Math.abs(ny * fl) + 6).toFixed(1)} `;
+  const r = rnd(o.seed || 1), id = "p" + (++PALM_ID), sil = !o.anima && !o.cheio;
+  const lean = (r() - .5) * 46, cx = 100 + lean, cy = 86;
+  const cor = o.cor || "#17271f";
+  const fill = (g, flat) => sil ? cor : `url(#${id}${g})`;
+  let defs = "";
+  if (!sil) defs = `<defs>
+    <linearGradient id="${id}t" x1="0" x2="1"><stop offset="0" stop-color="#b3946c"/><stop offset=".45" stop-color="${o.tronco || "#7a634a"}"/><stop offset="1" stop-color="#3a2b1d"/></linearGradient>
+    <linearGradient id="${id}f" x1="0" x2="1"><stop offset="0" stop-color="#2c5424"/><stop offset=".6" stop-color="#4f8a35"/><stop offset="1" stop-color="#86ad4c"/></linearGradient>
+    <linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#1c3a19"/><stop offset="1" stop-color="#3d6a2c"/></linearGradient>
+    <radialGradient id="${id}c" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9aa04a"/><stop offset=".6" stop-color="#5f6a26"/><stop offset="1" stop-color="#3c4318"/></radialGradient></defs>`;
+  // tronco: curva suave, base mais larga, anéis
+  const bx = 100, topW = 4.2, baseW = 8;
+  let tr = `<path d="M${bx - baseW} 300 C ${bx - baseW + 2} 262, ${bx + lean * .25 - 6} 200, ${cx - topW} ${cy + 4} L ${cx + topW} ${cy + 4} C ${bx + lean * .25 + 6} 200, ${bx + baseW - 2} 262, ${bx + baseW} 300 Z" fill="${sil ? cor : `url(#${id}t)`}"/>`;
+  if (!sil) {
+    let an = "";
+    for (let y = 294; y > cy + 10; y -= 5.5) {
+      const t = (300 - y) / (300 - cy), x = bx + (cx - bx) * Math.pow(t, 1.7), w = baseW + (topW - baseW) * t;
+      an += `M${(x - w).toFixed(1)} ${y.toFixed(1)} q${w.toFixed(1)} ${(1.6 + t).toFixed(1)} ${(2 * w).toFixed(1)} 0 `;
     }
-    const c = i % 3 === 0 ? cor2 : cor;
-    const lado = Math.cos(ang) < 0 ? -1 : 1;
-    folhas += false ? `<g class="fronde" style="transform-origin:${cx.toFixed(1)}px ${cy}px;--fd:${(-r() * 4).toFixed(2)}s;--ft:${(2.6 + r() * 1.8).toFixed(2)}s;--fa:${(lado * (2.5 + r() * 4)).toFixed(1)}deg"><path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>` : `<path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    tr += `<path d="${an}" stroke="rgba(30,18,8,.42)" stroke-width="1.1" fill="none"/>`;
   }
-  const cocos = `<g fill="${o.coco || cor}"><circle cx="${cx - 5}" cy="${cy + 6}" r="5"/><circle cx="${cx + 5}" cy="${cy + 7}" r="5"/><circle cx="${cx}" cy="${cy + 11}" r="4.6"/></g>`;
-  const svg = c => `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${c}</svg>`;
+  // uma folha
+  function folha(ang, len, droop, grad, nLeaf, seca) {
+    const ex = cx + Math.cos(ang) * len, ey = cy + Math.sin(ang) * len * .5 + droop;
+    const c1x = cx + Math.cos(ang) * len * .5, c1y = cy + Math.sin(ang) * len * .55 - 14;
+    let out = `<path d="M${cx} ${cy} Q ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}" stroke="${seca ? "#6b4e2a" : sil ? cor : "#2a4a1e"}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    let lf = "";
+    for (let k = 1; k <= nLeaf; k++) {
+      const t = .06 + k / (nLeaf + 1) * .94, u = 1 - t;
+      const px = u * u * cx + 2 * u * t * c1x + t * t * ex, py = u * u * cy + 2 * u * t * c1y + t * t * ey;
+      let tx = 2 * u * (c1x - cx) + 2 * t * (ex - c1x), ty = 2 * u * (c1y - cy) + 2 * t * (ey - c1y);
+      const L0 = Math.hypot(tx, ty); tx /= L0; ty /= L0;
+      const L = (seca ? 11 : 17) * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.1)), .55) * (.85 + r() * .3);
+      for (const side of [-1, 1]) {
+        let dx = tx * .55 - ty * side, dy = ty * .55 + tx * side;
+        dy += seca ? 1.4 : .75; const m = Math.hypot(dx, dy); dx /= m; dy /= m;
+        const qx = px + dx * L, qy = py + dy * L, nx = -dy, ny = dx, w = seca ? 1.2 : 1.9;
+        lf += `M${px.toFixed(1)} ${py.toFixed(1)} Q${(px + dx * L * .5 + nx * w).toFixed(1)} ${(py + dy * L * .5 + ny * w).toFixed(1)} ${qx.toFixed(1)} ${qy.toFixed(1)} Q${(px + dx * L * .5 - nx * w * .4).toFixed(1)} ${(py + dy * L * .5 - ny * w * .4).toFixed(1)} ${px.toFixed(1)} ${py.toFixed(1)}Z`;
+      }
+    }
+    return out + `<path d="${lf}" fill="${seca ? "#8a6a3c" : grad}"/>`;
+  }
+  const nl = sil ? 13 : 22;
+  let tras = "", frente = "";
+  for (let i = 0; i < 6; i++) { // camada de trás: mais curtas, mais para cima
+    const ang = -Math.PI * (.12 + i / 5 * .76) + (r() - .5) * .2;
+    tras += folha(ang, 52 + r() * 18, 8 + r() * 14, fill("b"), nl, false);
+  }
+  for (let i = 0; i < 9; i++) { // frente: compridas e caídas
+    const ang = -Math.PI + (i / 8) * Math.PI + (r() - .5) * .22;
+    frente += folha(ang, 66 + r() * 30, 26 + r() * 32, fill("f"), nl, false);
+  }
+  const seca = sil ? "" : folha(Math.PI * (r() > .5 ? .38 : .62), 40, 46, "", 12, true);
+  const cocos = `<g fill="${sil ? cor : `url(#${id}c)`}">${[[-6, 7, 5.4], [5, 8, 5.4], [0, 12.5, 5], [-10, 12, 4.4], [9, 13, 4.4]].map(([x, y, rr]) => `<circle cx="${(cx + x).toFixed(1)}" cy="${cy + y}" r="${rr}"/>`).join("")}</g>`;
+  const copa = tras + seca + cocos + frente;
+  const svg = c => `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${defs}${c}</svg>`;
   const flip = o.inv ? "transform:scaleX(-1);" : "";
-  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tronco + folhas + cocos)}</div>`;
+  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tr + copa)}</div>`;
   const ox = (cx / 2).toFixed(1) + "%", oy = (cy / 3).toFixed(1) + "%";
-  return `<div class="pl" style="${flip}"><div class="pl-l">${svg(tronco)}</div>
+  return `<div class="pl" style="${flip}"><div class="pl-l">${svg(tr)}</div>
     <div class="pl-l pl-copa" style="transform-origin:${ox} ${oy};--d:${(5 + r() * 3).toFixed(1)}s;--dd:${(-r() * 5).toFixed(1)}s">
-      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${svg(folhas + cocos)}</div></div></div>`;
+      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${svg(copa)}</div></div></div>`;
 }
 
 /* grama: lâminas finas em tons de verde, em três grupos que balançam com defasagem */
@@ -275,6 +305,7 @@ function aplicarHora() {
   input.value = Math.min(24, Math.max(6, hora));
   input.setAttribute("aria-valuetext", `${hora >= 24 ? "meia-noite" : ht}, ${abertas} lojas abertas`);
   if (somLigado) Som.atualiza();
+  if (typeof Tempo !== "undefined") Tempo.atualiza(hora, manual, n);
   if (dirAberto) listarDiretorio($("#busca").value);
 }
 input.addEventListener("input", () => { hora = parseFloat(input.value); manual = true; aplicarHora(); });
@@ -615,9 +646,96 @@ if ("IntersectionObserver" in window) {
   setTimeout(() => requestAnimationFrame(conta), 1200);
 })();
 
+/* ---------- previsão do tempo (Open-Meteo, sem chave) ---------- */
+const Tempo = (() => {
+  const LAT = -17.41, LON = -39.23;
+  const IC = {
+    sol: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.6" fill="#F2C230"/><g stroke="#E8862A" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></g></svg>`,
+    lua: `<svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.6A7 7 0 0 1 15.5 3.5z" fill="#F3E6CC"/></svg>`,
+    parcial: `<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="4" fill="#F2C230"/><path d="M7 19h10a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6 1.6A3.3 3.3 0 0 0 7 19z" fill="#EEF1F4"/></svg>`,
+    nuvem: `<svg viewBox="0 0 24 24"><path d="M6.5 19h11a4.3 4.3 0 0 0 .4-8.6 6 6 0 0 0-11.6 1.8A3.5 3.5 0 0 0 6.5 19z" fill="#D5DBE1"/></svg>`,
+    chuva: `<svg viewBox="0 0 24 24"><path d="M6.5 15h11a4.3 4.3 0 0 0 .4-8.6 6 6 0 0 0-11.6 1.8A3.5 3.5 0 0 0 6.5 15z" fill="#C3CBD3"/><g stroke="#3FA7FF" stroke-width="1.8" stroke-linecap="round"><path d="M8 17.5l-1 3M12 17.5l-1 3M16 17.5l-1 3"/></g></svg>`,
+    trovoada: `<svg viewBox="0 0 24 24"><path d="M6.5 14h11a4.3 4.3 0 0 0 .4-8.6 6 6 0 0 0-11.6 1.8A3.5 3.5 0 0 0 6.5 14z" fill="#9AA5B1"/><path d="M12.5 14l-3 5h3l-1.5 4 4.5-6h-3l1.5-3z" fill="#F2C230"/></svg>`,
+    nevoa: `<svg viewBox="0 0 24 24"><g stroke="#D5DBE1" stroke-width="2" stroke-linecap="round"><path d="M4 9h16M6 13h12M4 17h16"/></g></svg>`,
+  };
+  function desc(code, dia = true) {
+    if (code === 0) return { t: dia ? "Céu limpo" : "Noite limpa", i: dia ? "sol" : "lua", cover: .05, rain: 0 };
+    if (code <= 2) return { t: "Sol entre nuvens", i: dia ? "parcial" : "lua", cover: .35, rain: 0 };
+    if (code === 3) return { t: "Nublado", i: "nuvem", cover: .85, rain: 0 };
+    if (code <= 48) return { t: "Névoa", i: "nevoa", cover: .7, rain: 0 };
+    if (code <= 57) return { t: "Garoa", i: "chuva", cover: .85, rain: .35 };
+    if (code <= 67 || (code >= 80 && code <= 82)) return { t: code >= 80 ? "Pancadas de chuva" : "Chuva", i: "chuva", cover: .95, rain: .75 };
+    if (code >= 95) return { t: "Trovoadas", i: "trovoada", cover: 1, rain: 1 };
+    return { t: "Nublado", i: "nuvem", cover: .8, rain: 0 };
+  }
+  let dados = null;
+  const DIAS_C = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  async function carregar() {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&hourly=temperature_2m,weather_code,precipitation_probability,cloud_cover&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FBahia&forecast_days=5`;
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(url, { signal: ctl.signal }); if (!r.ok) throw 0;
+      dados = await r.json();
+      $("#btnTempo").hidden = false;
+      aplicarHora();
+    } catch (_) { /* sem previsão: o site segue normal */ }
+  }
+  function naHora(h) {
+    if (!dados) return null;
+    const hoje = dados.hourly.time.findIndex(t => t.endsWith("T00:00") && t.startsWith(dados.current.time.slice(0, 10)));
+    const i = Math.max(0, hoje) + Math.min(23, Math.floor(h));
+    return { temp: dados.hourly.temperature_2m[i], code: dados.hourly.weather_code[i], chuva: dados.hourly.precipitation_probability[i], cloud: dados.hourly.cloud_cover[i] / 100, i };
+  }
+  function atualiza(h, manual, noiteF) {
+    if (!dados) return;
+    const c = dados.current, x = manual ? naHora(h) : { temp: c.temperature_2m, code: c.weather_code, cloud: null };
+    const d = desc(x.code, noiteF < .5);
+    $("#tempoIco").innerHTML = IC[d.i];
+    $("#tempoTemp").textContent = Math.round(x.temp) + "°";
+    $("#tempoSr").textContent = `${d.t}, ${Math.round(x.temp)} graus${manual ? " às " + fmtH(h) : " agora"}. Abrir a previsão do tempo`;
+    const cover = x.cloud != null ? Math.max(d.cover * .6, x.cloud) : d.cover;
+    Ceu.set({ cover: Math.min(1, cover), rain: d.rain });
+    const ch = $("#chuva"); ch.style.opacity = d.rain ? (.35 + d.rain * .5).toFixed(2) : 0;
+    if (!$("#tempo").hidden) painel();
+  }
+  function dica(code, temp, noiteF) {
+    const d = desc(code), btn = (slug, txt) => `<button type="button" data-ir="${slug}">${txt}</button>`;
+    if (d.rain) return `<p><strong>Vai chover?</strong> A varanda é coberta: dá pra passear sem se molhar.</p><div>${btn("caldos-e-cia", "Um caldo no Caldos & Cia")}${btn("pane-e-caffe", "Um café no Pane & Caffè")}</div>`;
+    if (noiteF > .5) return `<p><strong>Noite fresca na varanda.</strong> As luzes estão acesas e tem mesa esperando.</p><div>${btn("la-taverna", "Um brinde na La Taverna")}${btn("lampiao-burger", "Hambúrguer no Lampião")}</div>`;
+    if (temp >= 29) return `<p><strong>Calorão de praia.</strong> Hora de refrescar.</p><div>${btn("sabor-gelado", "Açaí na Sabor Gelado")}${btn("armazem-do-shopping", "Água gelada no Armazém")}</div>`;
+    return `<p><strong>Tempo bom pra praia.</strong> Passe aqui antes de descer pra areia.</p><div>${btn("farmacia-harmonize", "Protetor na Farmácia Harmonize")}${btn("divergente", "Biquíni na Divergente")}</div>`;
+  }
+  function painel() {
+    const c = dados.current, d = desc(c.weather_code, c.is_day === 1);
+    $("#tempoAgora").innerHTML = `<div class="ta-ico">${IC[d.i]}</div><div><p class="ta-temp">${Math.round(c.temperature_2m)}°</p><p class="ta-desc">${d.t}</p>
+      <p class="ta-mais">Sensação de ${Math.round(c.apparent_temperature)}° · vento ${Math.round(c.wind_speed_10m)} km/h</p></div>`;
+    $("#tempoDica").innerHTML = dica(c.weather_code, c.temperature_2m, c.is_day ? 0 : 1);
+    const agoraI = naHora(new Date().getHours()).i;
+    let hs = "";
+    for (let k = 1; k <= 8; k++) {
+      const i = agoraI + k * 2; if (i >= dados.hourly.time.length) break;
+      const hh = +dados.hourly.time[i].slice(11, 13), dd = desc(dados.hourly.weather_code[i], hh >= 6 && hh < 18);
+      hs += `<div><span>${hh}h</span>${IC[dd.i]}<strong>${Math.round(dados.hourly.temperature_2m[i])}°</strong><small>${dados.hourly.precipitation_probability[i]}%</small></div>`;
+    }
+    $("#tempoHoras").innerHTML = hs;
+    $("#tempoDias").innerHTML = dados.daily.time.map((t, i) => {
+      const dd = desc(dados.daily.weather_code[i]), dt = new Date(t + "T12:00");
+      return `<div><span>${i === 0 ? "Hoje" : DIAS_C[dt.getDay()]}</span>${IC[dd.i]}<em>${dd.t}</em><small>${dados.daily.precipitation_probability_max[i]}%</small><strong>${Math.round(dados.daily.temperature_2m_min[i])}° / ${Math.round(dados.daily.temperature_2m_max[i])}°</strong></div>`;
+    }).join("");
+  }
+  function abrir() { if (!dados) return; painel(); const t = $("#tempo"); t.hidden = false; requestAnimationFrame(() => t.classList.add("on")); $("#btnTempo").setAttribute("aria-expanded", "true"); $("#tempoFechar").focus(); }
+  function fechar() { const t = $("#tempo"); t.classList.remove("on"); $("#btnTempo").setAttribute("aria-expanded", "false"); setTimeout(() => t.hidden = true, 250); }
+  $("#btnTempo").addEventListener("click", () => $("#tempo").hidden ? abrir() : fechar());
+  $("#tempoFechar").addEventListener("click", () => { fechar(); $("#btnTempo").focus(); });
+  $("#tempo").addEventListener("keydown", e => { if (e.key === "Escape") { fechar(); $("#btnTempo").focus(); } });
+  $("#tempo").addEventListener("click", e => { const b = e.target.closest("[data-ir]"); if (b) { fechar(); abrirLoja(b.dataset.ir); } });
+  return { carregar, atualiza };
+})();
+
 /* ---------- início ---------- */
 aplicarHora();
 addEventListener("resize", aplicarHora);
+Tempo.carregar();
 const params = new URLSearchParams(location.search);
 const porta = params.get("porta");
 const m = location.hash.match(/^#\/(.+)$/);

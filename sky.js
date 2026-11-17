@@ -9,7 +9,7 @@ window.Ceu = (() => {
   const fs = `
 precision highp float;
 uniform vec2 uRes; uniform float uTime; uniform vec2 uSun; uniform float uElev; uniform float uNight;
-uniform vec2 uMoon; uniform float uMoonVis; uniform float uScroll; uniform float uHorizon;
+uniform vec2 uMoon; uniform float uMoonVis; uniform float uScroll; uniform float uHorizon; uniform float uCover; uniform float uRain;
 float h(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
   return mix(mix(h(i),h(i+vec2(1,0)),u.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),u.x),u.y);}
@@ -51,7 +51,7 @@ void main(){
   vec2 cp=vec2(q.x+uScroll*.00012+uTime*.006,q.y*2.4);
   float wq=fbm(cp*1.3+uTime*.01);
   float c1=fbm(cp*2.1+vec2(wq,wq*.7)*1.6);
-  float cover=smoothstep(.52,.80,c1)*smoothstep(.0,.25,y)*(1.-smoothstep(.85,1.,y)*.4);
+  float cover=smoothstep(.52-uCover*.32,.80-uCover*.22,c1)*smoothstep(.0,.25,y)*(1.-smoothstep(.85,1.,y)*.4);
   float c2=n(vec2(q.x*3.+uScroll*.0001+uTime*.006,q.y*10.)+3.)*.5+n(vec2(q.x*7.,q.y*22.)+9.)*.3;
   float wisp=smoothstep(.55,.78,c2)*.45*smoothstep(.1,.5,y);
   // luz nas nuvens: lado do sol mais claro, base mais escura
@@ -61,6 +61,8 @@ void main(){
   vec3 cNight=mix(vec3(.05,.07,.12),vec3(.16,.19,.27),lightness);
   vec3 cc=mix(cNight,cSet,tSet); cc=mix(cc,cDay,tDay);
   cc+=sunCol*exp(-d*5.)*.45*sunVis;
+  cc=mix(cc,cc*vec3(.62,.66,.72),uRain);
+  col=mix(col,mix(col,vec3(dot(col,vec3(.3,.59,.11))),uCover*.5)*(1.-uRain*.35),1.);
   col=mix(col,cc,cover*.92);
   col=mix(col,cc,wisp*(1.-cover));
   // grão fino para não ter banding
@@ -77,8 +79,8 @@ void main(){
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ["uRes", "uTime", "uSun", "uElev", "uNight", "uMoon", "uMoonVis", "uScroll", "uHorizon"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
-  const st = { sun: [.5, .7], elev: .8, night: 0, moon: [.5, .7], moonVis: 0, scroll: 0, horizon: .6 };
+  const U = {}; ["uRes", "uTime", "uSun", "uElev", "uNight", "uMoon", "uMoonVis", "uScroll", "uHorizon", "uCover", "uRain"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
+  const st = { sun: [.5, .7], elev: .8, night: 0, moon: [.5, .7], moonVis: 0, scroll: 0, horizon: .6, cover: .25, rain: 0 };
   let escala = matchMedia("(max-width:700px)").matches ? .3 : .32, intervalo = 66;
   function tam() {
     const w = Math.round(innerWidth * escala), h = Math.round(innerHeight * escala);
@@ -96,6 +98,7 @@ void main(){
     gl.uniform2f(U.uSun, st.sun[0], st.sun[1]); gl.uniform1f(U.uElev, st.elev); gl.uniform1f(U.uNight, st.night);
     gl.uniform2f(U.uMoon, st.moon[0], st.moon[1]); gl.uniform1f(U.uMoonVis, st.moonVis);
     gl.uniform1f(U.uScroll, st.scroll); gl.uniform1f(U.uHorizon, st.horizon);
+    gl.uniform1f(U.uCover, st.cover); gl.uniform1f(U.uRain, st.rain);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
   requestAnimationFrame(frame);

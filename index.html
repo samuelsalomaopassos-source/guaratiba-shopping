@@ -2,6 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.open-meteo.com; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA</title>
 <meta name="description" content="Caminhe pela varanda do Guaratiba Shopping, na Praia de Guaratiba, em Prado (BA): 26 lojas, do café da manhã ao último brinde, com horário de cada uma em tempo real.">
@@ -9,10 +11,10 @@
 <meta property="og:title" content="Guaratiba Shopping · A Varanda do Sol">
 <meta property="og:description" content="26 lojas numa varanda só, na Praia de Guaratiba, Prado-BA. Veja o que está aberto agora.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://guaratiba-shopping.netlify.app/assets/og.png">
+<meta property="og:image" content="https://samuelsalomaopassos-source.github.io/guaratiba-shopping/assets/og.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
 <a class="skip" href="#diretorio-lista">Pular para a lista de lojas</a>
@@ -43,6 +45,28 @@
   <label class="clock-label" for="hora"><span id="horaTxt">--h--</span> <span id="horaQuando">agora</span></label>
   <input id="hora" type="range" min="6" max="24" step="0.25" value="12" aria-describedby="abertasTxt">
   <button class="clock-now" id="btnAgora" type="button" hidden>Agora</button>
+  <button class="tempo-chip" id="btnTempo" type="button" aria-haspopup="dialog" aria-controls="tempo" hidden>
+    <span class="tempo-ico" id="tempoIco"></span><span id="tempoTemp">--°</span><span class="sr" id="tempoSr">Previsão do tempo</span>
+  </button>
+</div>
+
+<div class="chuva" id="chuva" aria-hidden="true"></div>
+
+<!-- Previsão do tempo -->
+<div class="tempo" id="tempo" role="dialog" aria-modal="false" aria-labelledby="tempoTitulo" hidden>
+  <div class="tempo-topo">
+    <h2 id="tempoTitulo">Tempo na Praia de Guaratiba</h2>
+    <button class="btn-ghost" id="tempoFechar" type="button" aria-label="Fechar a previsão do tempo">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="tempo-agora" id="tempoAgora"></div>
+  <div class="tempo-dica" id="tempoDica"></div>
+  <h3>Próximas horas</h3>
+  <div class="tempo-horas" id="tempoHoras"></div>
+  <h3>Próximos dias</h3>
+  <div class="tempo-dias" id="tempoDias"></div>
+  <p class="tempo-fonte">Previsão: Open-Meteo</p>
 </div>
 
 <!-- Sol e lua (acima da varanda para poderem ser arrastados) -->
@@ -70,8 +94,8 @@
         <span class="arandela a1"></span><span class="arandela a2"></span><span class="arandela a3"></span>
       </div>
       <div class="entrada-texto">
-        <h1 id="titulo">Guaratiba Shopping</h1>
-        <p class="entrada-sub">26 lojas numa varanda só, a dois passos da Praia de Guaratiba, em Prado, Bahia.</p>
+        <h1 id="titulo" class="letreiro"><span class="l1">Guaratiba</span> <span class="l2">Shopping</span></h1>
+        <p class="entrada-sub"><strong>O Guaratiba Shopping na sua mão.</strong> 26 lojas numa varanda só, a dois passos da Praia de Guaratiba, em Prado, Bahia.</p>
         <p class="agora"><span class="agora-num" id="abertasN">--</span> <span class="agora-txt" id="abertasTxt">de 26 lojas abertas agora</span></p>
         <button class="btn-primary" id="btnCaminhar" type="button">Caminhar pela varanda <span aria-hidden="true">→</span></button>
       </div>
@@ -160,8 +184,8 @@
   </div>
 </noscript>
 
-<script src="data.js?v=10"></script>
-<script src="sky.js?v=10"></script>
-<script src="app.js?v=10"></script>
+<script src="data.js?v=11"></script>
+<script src="sky.js?v=11"></script>
+<script src="app.js?v=11"></script>
 </body>
 </html>
