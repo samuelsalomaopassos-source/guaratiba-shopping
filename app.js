@@ -694,24 +694,34 @@ $("#btnSom").addEventListener("click", e => {
 (() => {
   if (reduz) return;
   const grama = $("#gramaFrente"); grama.style.transformOrigin = "50% 100%";
-  const itens = [...document.querySelectorAll(".aviso,.grupo-tabua")].map(el => ({ el, bay: el.closest(".loja-baia,.bay-grupo"), k: (el.classList.contains("grupo-tabua") ? .45 : 1) * (.8 + Math.random() * .4), a: 0, v: 0, l: 0, w: 0 }));
+  const itens = [...document.querySelectorAll(".aviso,.grupo-tabua")].map(el => ({ el, bay: el.closest(".loja-baia,.bay-grupo"), p: el.classList.contains("grupo-tabua") ? .005 : .008, g: el.classList.contains("grupo-tabua") ? .028 : .045, k: .85 + Math.random() * .3, a: 0, v: 0, l: 0, w: 0 }));
   const mede = () => itens.forEach(b => { const r = b.bay.getBoundingClientRect(); b.l = r.left + walk.scrollLeft; b.w = r.width; });
   mede(); addEventListener("resize", mede);
-  let ultX = walk.scrollLeft, raf = 0, gv = 0;
+  let ultX = walk.scrollLeft, raf = 0, gv = 0, vSuave = 0, tAnt = performance.now();
   function passoFis() {
-    const x = walk.scrollLeft, dx = Math.max(-80, Math.min(80, x - ultX)); ultX = x;
+    const agora = performance.now(), passos = Math.max(1, Math.min(4, Math.round((agora - tAnt) / 16.7))); tAnt = agora;
+    const x = walk.scrollLeft, dx = Math.max(-60, Math.min(60, x - ultX)) / passos; ultX = x;
     const W = innerWidth; let ativo = Math.abs(dx) > .05;
+    for (let s = 0; s < passos; s++) {
+      // pêndulo de verdade: reage à aceleração da caminhada (arrancar e frear), não à velocidade constante
+      const vs = vSuave + (dx - vSuave) * .08, acel = vs - vSuave; vSuave = vs;
+      if (Math.abs(vs) > .05) ativo = true;
+      for (const b of itens) {
+        if (b.l - x > W + 40 || b.l + b.w - x < -40) { if (b.a) { b.a = b.v = 0; b.el.style.rotate = ""; } continue; }
+        b.v += -acel * b.g * b.k - b.a * b.p; b.v *= .955; b.a += b.v;
+        if (Math.abs(b.a) > 4.5) { b.a = Math.sign(b.a) * 4.5; b.v *= -.3; }
+      }
+    }
     for (const b of itens) {
-      if (b.l - x > W + 40 || b.l + b.w - x < -40) { if (b.a) { b.a = b.v = 0; b.el.style.rotate = ""; } continue; }
-      b.v += -dx * .03 * b.k - b.a * .05 * b.k; b.v *= .92; b.a = Math.max(-9, Math.min(9, b.a + b.v));
+      if (!b.a && !b.v) continue;
       if (Math.abs(b.a) > .03 || Math.abs(b.v) > .01) { ativo = true; b.el.style.rotate = b.a.toFixed(2) + "deg"; }
-      else if (b.a) { b.a = b.v = 0; b.el.style.rotate = ""; }
+      else { b.a = b.v = 0; b.el.style.rotate = ""; }
     }
     gv += (dx - gv) * .12; if (Math.abs(gv) > .02) ativo = true; else gv = 0;
     grama.style.transform = `translate3d(${(-((x * 1.35) % TILE)).toFixed(1)}px,0,0) skewX(${Math.max(-12, Math.min(12, -gv * .45)).toFixed(2)}deg)`;
     raf = ativo ? requestAnimationFrame(passoFis) : 0;
   }
-  walk.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(passoFis); }, { passive: true });
+  walk.addEventListener("scroll", () => { if (!raf) { tAnt = performance.now() - 16.7; raf = requestAnimationFrame(passoFis); } }, { passive: true });
 })();
 
 /* placas balançam quando entram na tela */
