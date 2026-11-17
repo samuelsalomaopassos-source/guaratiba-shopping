@@ -45,6 +45,10 @@ a{color:inherit}
 @keyframes longe{from{transform:rotate(-1.4deg)}to{transform:rotate(2deg)}}
 .pl,.pl-l{position:absolute;inset:0}
 .pl svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.pl > svg,.pl > .pl-l > svg{filter:brightness(calc(1 - var(--noite) * .62))}
+.copa-img{position:absolute;height:auto;max-width:none;transform-origin:53% 54.7%;user-select:none;pointer-events:none;
+  filter:brightness(calc(var(--tom,1) * (1 - var(--noite) * .72))) saturate(calc(1.05 - var(--noite) * .5)) hue-rotate(var(--hue,0deg)) drop-shadow(0 6px 6px rgba(0,0,0,.18))}
+.copa-img.longe{filter:brightness(calc(.62 * (1 - var(--noite) * .7))) saturate(.7) contrast(.92)}
 .pl-copa{will-change:transform;animation:sopra var(--d,6s) ease-in-out var(--dd,0s) infinite}
 .pl-copa2{will-change:transform;animation:fronde var(--ft,3s) ease-in-out infinite alternate}
 @keyframes tronco{from{transform:rotate(-.8deg)}to{transform:rotate(1.4deg)}}
@@ -358,6 +362,7 @@ body.escuro .grupo-chao{color:var(--creme-claro)}
 .btn-link{font-weight:600;font-size:16px;text-decoration:underline;text-underline-offset:4px;min-height:44px}
 .credito{position:absolute;z-index:7;left:20px;top:calc(var(--floorTop) + 3.4svh);font-size:13px;color:#2a2a26;opacity:.85}
 body.escuro .credito{color:var(--creme-claro)}
+.credito{max-width:min(620px,86vw);line-height:1.4}.credito a{color:inherit}
 @media (min-width:1100px){ .credito{left:64px} }
 .varal{position:absolute;left:calc(100vw + 16px);right:16px;top:calc(max(12px,env(safe-area-inset-top)) + 120px);bottom:calc(100% - var(--floorTop) + 2svh);display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px 14px;z-index:7;padding-top:14px}
 .corda-varal{position:absolute;left:-4%;right:-4%;height:2px;background:#2a1d14;border-radius:2px;box-shadow:0 2px 3px rgba(0,0,0,.3)}
@@ -385,19 +390,17 @@ body.escuro .credito{color:var(--creme-claro)}
 @media (min-width:1100px) and (pointer:fine){ .nav-arrow{display:grid;place-items:center} }
 
 /* ---------- LOJA ABERTA ---------- */
-.loja{position:fixed;inset:0;z-index:40;opacity:0;transition:opacity .45s var(--ease)}
+.loja{position:fixed;inset:0;z-index:40;opacity:0;transition:opacity .45s var(--ease);will-change:transform,opacity}
 .loja.cheia{opacity:1}
-.loja.de-vitrine{opacity:1;clip-path:inset(var(--ct) var(--cr) var(--cb) var(--cl) round 3px);transition:clip-path .95s cubic-bezier(.72,0,.22,1)}
-.loja.de-vitrine.cheia{clip-path:inset(0 0 0 0 round 0)}
+.loja.camera{transition:none}
 .loja-brilho{position:absolute;inset:0;z-index:6;pointer-events:none;transform:translateX(-120%);
-  background:linear-gradient(104deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.32) 47%,rgba(255,250,235,.55) 50%,rgba(255,255,255,.32) 53%,rgba(255,255,255,0) 70%)}
-.loja.cheia:not(.trocando) .loja-brilho{animation:varre 1.4s cubic-bezier(.5,0,.2,1) .35s both}
+  background:linear-gradient(104deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.28) 47%,rgba(255,250,235,.5) 50%,rgba(255,255,255,.28) 53%,rgba(255,255,255,0) 70%)}
+.loja.cheia:not(.trocando):not(.saindo) .loja-brilho{animation:varre 1.3s cubic-bezier(.5,0,.2,1) .7s both}
 @keyframes varre{to{transform:translateX(120%)}}
-.walk,.sky{transition:transform .95s cubic-bezier(.72,0,.22,1)}
-body.entrando .walk{transform:scale(1.75)}
-body.entrando .sky{transform:scale(1.12)}
-body::after{content:"";position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;transition:opacity .7s ease;
-  background:radial-gradient(ellipse 70% 70% at 50% 50%,rgba(0,0,0,0) 35%,rgba(0,0,0,.6))}
+.walk,.sky{will-change:transform}
+/* vinheta + luz quente que vaza da vitrine enquanto a câmera entra */
+body::after{content:"";position:fixed;inset:0;z-index:39;pointer-events:none;opacity:0;transition:opacity .9s cubic-bezier(.62,0,.2,1);
+  background:radial-gradient(ellipse 46% 52% at 50% 50%,rgba(255,226,170,.38),rgba(255,214,150,0) 60%),radial-gradient(ellipse 75% 75% at 50% 50%,rgba(0,0,0,0) 40%,rgba(0,0,0,.55))}
 body.entrando::after{opacity:1}
 .loja-baia .interior{transition:filter .5s ease}
 .loja-baia.acesa .interior{filter:brightness(1.5)}
@@ -441,11 +444,11 @@ body.entrando::after{opacity:1}
 .loja-vizinhas strong{display:block;font-size:19px;margin-top:4px}
 .loja-vizinhas .prox{text-align:right}
 .loja-corpo > *{animation:sobe .7s var(--ease) both}
-.loja-corpo > :nth-child(1){animation-delay:.75s}
-.loja-corpo > :nth-child(2){animation-delay:.83s}
-.loja-corpo > :nth-child(3){animation-delay:.91s}
-.loja-corpo > :nth-child(4){animation-delay:.99s}
-.loja-placa{animation:placaEntra .9s cubic-bezier(.2,.9,.25,1.1) .62s both!important}
+.loja-corpo > :nth-child(1){animation-delay:.8s}
+.loja-corpo > :nth-child(2){animation-delay:.88s}
+.loja-corpo > :nth-child(3){animation-delay:.96s}
+.loja-corpo > :nth-child(4){animation-delay:1.04s}
+.loja-placa{animation:placaEntra .9s cubic-bezier(.2,.9,.25,1.1) .66s both!important}
 .loja.trocando .loja-placa{animation-delay:0s!important}
 @keyframes placaEntra{from{opacity:0;transform:scale(.82) translateY(16px)}to{opacity:1;transform:none}}
 .loja.trocando .loja-corpo > *{animation-delay:0s}
@@ -505,6 +508,4 @@ body.entrando::after{opacity:1}
 @media (prefers-reduced-motion:reduce){
   .loja-baia:not(.vista) .legenda{opacity:1;transform:none}
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
-  .loja.de-vitrine{clip-path:none}
-  body.entrando .walk,body.entrando .sky{transform:none}
 }

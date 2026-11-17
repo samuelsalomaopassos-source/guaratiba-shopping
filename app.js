@@ -30,72 +30,40 @@ function sol(g = "#FBF5E8", centro = true) {
   return `<svg viewBox="-50 -50 100 100" aria-hidden="true">${raios}${G}</svg>`;
 }
 function rnd(seed) { let x = seed * 9301 + 49297; return () => (x = (x * 9301 + 49297) % 233280) / 233280; }
-/* coqueiro procedural: tronco com volume e anéis, folhas com folíolos preenchidos (camada de trás mais escura),
-   uma folha seca e cachos de coco. Silhuetas distantes usam cor chapada; os de perto ganham gradientes. */
-let PALM_ID = 0;
+/* coqueiro: copa fotográfica real (Cocos nucifera, recortada do céu) sobre tronco desenhado com anéis.
+   A copa gira em torno do ponto onde as folhas nascem; cada coqueiro varia inclinação, tamanho, espelho e tom. */
 function coqueiro(o = {}) {
-  const r = rnd(o.seed || 1), id = "p" + (++PALM_ID), sil = !o.anima && !o.cheio;
-  const lean = (r() - .5) * 46, cx = 100 + lean, cy = 86;
-  const cor = o.cor || "#17271f";
-  const fill = (g, flat) => sil ? cor : `url(#${id}${g})`;
+  const r = rnd(o.seed || 1), longe = !o.anima && !o.cheio;
+  const lean = (r() - .5) * 40, cx = 100 + lean, cy = 88;
+  // tronco: base larga, curva suave, cinza-acastanhado como coqueiro de praia
+  const bx = 100, topW = 3.6, baseW = 7.2, id = "t" + Math.round(r() * 1e6);
+  const corT = longe ? (o.cor || "#2a2f2a") : `url(#${id})`;
+  let tr = `<path d="M${bx - baseW} 300 C ${bx - baseW + 2} 258, ${bx + lean * .3 - 5} 190, ${cx - topW} ${cy + 6} L ${cx + topW} ${cy + 6} C ${bx + lean * .3 + 5} 190, ${bx + baseW - 2} 258, ${bx + baseW} 300 Z" fill="${corT}"/>`;
   let defs = "";
-  if (!sil) defs = `<defs>
-    <linearGradient id="${id}t" x1="0" x2="1"><stop offset="0" stop-color="#b3946c"/><stop offset=".45" stop-color="${o.tronco || "#7a634a"}"/><stop offset="1" stop-color="#3a2b1d"/></linearGradient>
-    <linearGradient id="${id}f" x1="0" x2="1"><stop offset="0" stop-color="#2c5424"/><stop offset=".6" stop-color="#4f8a35"/><stop offset="1" stop-color="#86ad4c"/></linearGradient>
-    <linearGradient id="${id}b" x1="0" x2="1"><stop offset="0" stop-color="#1c3a19"/><stop offset="1" stop-color="#3d6a2c"/></linearGradient>
-    <radialGradient id="${id}c" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9aa04a"/><stop offset=".6" stop-color="#5f6a26"/><stop offset="1" stop-color="#3c4318"/></radialGradient></defs>`;
-  // tronco: curva suave, base mais larga, anéis
-  const bx = 100, topW = 4.2, baseW = 8;
-  let tr = `<path d="M${bx - baseW} 300 C ${bx - baseW + 2} 262, ${bx + lean * .25 - 6} 200, ${cx - topW} ${cy + 4} L ${cx + topW} ${cy + 4} C ${bx + lean * .25 + 6} 200, ${bx + baseW - 2} 262, ${bx + baseW} 300 Z" fill="${sil ? cor : `url(#${id}t)`}"/>`;
-  if (!sil) {
+  if (!longe) {
+    defs = `<defs><linearGradient id="${id}" x1="0" x2="1"><stop offset="0" stop-color="#a99d8a"/><stop offset=".35" stop-color="#8a7e6b"/><stop offset=".75" stop-color="#5b5143"/><stop offset="1" stop-color="#332c23"/></linearGradient></defs>`;
     let an = "";
-    for (let y = 294; y > cy + 10; y -= 5.5) {
-      const t = (300 - y) / (300 - cy), x = bx + (cx - bx) * Math.pow(t, 1.7), w = baseW + (topW - baseW) * t;
-      an += `M${(x - w).toFixed(1)} ${y.toFixed(1)} q${w.toFixed(1)} ${(1.6 + t).toFixed(1)} ${(2 * w).toFixed(1)} 0 `;
+    for (let y = 296; y > cy + 12; y -= 3.6 + r() * 1.4) {
+      const t = (300 - y) / (300 - cy), x = bx + (cx - bx) * Math.pow(t, 1.6), w = baseW + (topW - baseW) * t;
+      an += `M${(x - w).toFixed(1)} ${y.toFixed(1)} q${w.toFixed(1)} ${(1.2 + t * 1.4).toFixed(1)} ${(2 * w).toFixed(1)} 0 `;
     }
-    tr += `<path d="${an}" stroke="rgba(30,18,8,.42)" stroke-width="1.1" fill="none"/>`;
+    tr += `<path d="${an}" stroke="rgba(40,30,20,.45)" stroke-width=".8" fill="none"/>`;
+    // fibras escuras logo abaixo da copa
+    tr += `<path d="M${cx - topW - 1} ${cy + 8} q${topW + 1} 6 ${2 * topW + 2} 0 l-1 8 q-${topW} 4 -${2 * topW} 0z" fill="rgba(45,34,20,.55)"/>`;
   }
-  // uma folha
-  function folha(ang, len, droop, grad, nLeaf, seca) {
-    const ex = cx + Math.cos(ang) * len, ey = cy + Math.sin(ang) * len * .5 + droop;
-    const c1x = cx + Math.cos(ang) * len * .5, c1y = cy + Math.sin(ang) * len * .55 - 14;
-    let out = `<path d="M${cx} ${cy} Q ${c1x.toFixed(1)} ${c1y.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}" stroke="${seca ? "#6b4e2a" : sil ? cor : "#2a4a1e"}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
-    let lf = "";
-    for (let k = 1; k <= nLeaf; k++) {
-      const t = .06 + k / (nLeaf + 1) * .94, u = 1 - t;
-      const px = u * u * cx + 2 * u * t * c1x + t * t * ex, py = u * u * cy + 2 * u * t * c1y + t * t * ey;
-      let tx = 2 * u * (c1x - cx) + 2 * t * (ex - c1x), ty = 2 * u * (c1y - cy) + 2 * t * (ey - c1y);
-      const L0 = Math.hypot(tx, ty); tx /= L0; ty /= L0;
-      const L = (seca ? 11 : 17) * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.1)), .55) * (.85 + r() * .3);
-      for (const side of [-1, 1]) {
-        let dx = tx * .55 - ty * side, dy = ty * .55 + tx * side;
-        dy += seca ? 1.4 : .75; const m = Math.hypot(dx, dy); dx /= m; dy /= m;
-        const qx = px + dx * L, qy = py + dy * L, nx = -dy, ny = dx, w = seca ? 1.2 : 1.9;
-        lf += `M${px.toFixed(1)} ${py.toFixed(1)} Q${(px + dx * L * .5 + nx * w).toFixed(1)} ${(py + dy * L * .5 + ny * w).toFixed(1)} ${qx.toFixed(1)} ${qy.toFixed(1)} Q${(px + dx * L * .5 - nx * w * .4).toFixed(1)} ${(py + dy * L * .5 - ny * w * .4).toFixed(1)} ${px.toFixed(1)} ${py.toFixed(1)}Z`;
-      }
-    }
-    return out + `<path d="${lf}" fill="${seca ? "#8a6a3c" : grad}"/>`;
-  }
-  const nl = sil ? 13 : 22;
-  let tras = "", frente = "";
-  for (let i = 0; i < 6; i++) { // camada de trás: mais curtas, mais para cima
-    const ang = -Math.PI * (.12 + i / 5 * .76) + (r() - .5) * .2;
-    tras += folha(ang, 52 + r() * 18, 8 + r() * 14, fill("b"), nl, false);
-  }
-  for (let i = 0; i < 9; i++) { // frente: compridas e caídas
-    const ang = -Math.PI + (i / 8) * Math.PI + (r() - .5) * .22;
-    frente += folha(ang, 66 + r() * 30, 26 + r() * 32, fill("f"), nl, false);
-  }
-  const seca = sil ? "" : folha(Math.PI * (r() > .5 ? .38 : .62), 40, 46, "", 12, true);
-  const cocos = `<g fill="${sil ? cor : `url(#${id}c)`}">${[[-6, 7, 5.4], [5, 8, 5.4], [0, 12.5, 5], [-10, 12, 4.4], [9, 13, 4.4]].map(([x, y, rr]) => `<circle cx="${(cx + x).toFixed(1)}" cy="${cy + y}" r="${rr}"/>`).join("")}</g>`;
-  const copa = tras + seca + cocos + frente;
   const svg = c => `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true">${defs}${c}</svg>`;
+  // copa: 190 de largura no viewBox (escala ±12%), pivô da foto em 53% × 54.7%
+  const k = .88 + r() * .24, W = 190 * k, H = W * .798;
+  const left = (cx - W * .53) / 2, top = (cy - H * .547) / 3;
+  const rot = (lean / 20) * 6 + (r() - .5) * 8, tom = (.9 + r() * .2).toFixed(2), hue = ((r() - .5) * 14).toFixed(0);
+  const img = `<img class="copa-img${longe ? " longe" : ""}" src="assets/coqueiro-copa${longe ? "-p" : ""}.webp" alt="" decoding="async" draggable="false"
+    style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%;width:${(W / 2).toFixed(2)}%;transform:rotate(${rot.toFixed(1)}deg)${r() > .5 ? " scaleX(-1)" : ""};--tom:${tom};--hue:${hue}deg">`;
   const flip = o.inv ? "transform:scaleX(-1);" : "";
-  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tr + copa)}</div>`;
   const ox = (cx / 2).toFixed(1) + "%", oy = (cy / 3).toFixed(1) + "%";
+  if (!o.anima) return `<div class="pl" style="${flip}">${svg(tr)}<div class="pl-l" style="transform-origin:${ox} ${oy}">${img}</div></div>`;
   return `<div class="pl" style="${flip}"><div class="pl-l">${svg(tr)}</div>
     <div class="pl-l pl-copa" style="transform-origin:${ox} ${oy};--d:${(5 + r() * 3).toFixed(1)}s;--dd:${(-r() * 5).toFixed(1)}s">
-      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${svg(copa)}</div></div></div>`;
+      <div class="pl-l pl-copa2" style="transform-origin:${ox} ${oy};--ft:${(2.4 + r() * 1.2).toFixed(1)}s">${img}</div></div></div>`;
 }
 
 /* grama: lâminas finas em tons de verde, em três grupos que balançam com defasagem */
@@ -417,9 +385,35 @@ function corpoLoja(l) {
 function recorteDaVitrine(slug) {
   const v = document.querySelector(`#b-${slug} .vitrine`); if (!v) return null;
   const r = v.getBoundingClientRect(), W = innerWidth, H = innerHeight;
-  if (r.right < 0 || r.left > W) return null;
-  return { t: r.top, r: W - r.right, b: H - r.bottom, l: r.left, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+  if (r.right < 0 || r.left > W || r.width < 4) return null;
+  return { w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
 }
+/* câmera: um único movimento contínuo. A varanda inteira (walk) avança até a vitrine encher a tela,
+   e a página da loja nasce do tamanho da vitrine e cresce junto, como se fosse o interior dela.
+   Só transform e opacity (compositor), via Web Animations; setTimeout garante o fim mesmo com a aba oculta. */
+const CAM = { dur: 1100, ease: "cubic-bezier(.62,0,.2,1)" };
+let camAnims = [];
+function camera(c, entrando) {
+  camAnims.forEach(a => a.cancel()); camAnims = [];
+  const W = innerWidth, H = innerHeight, sky = $("#sky");
+  const Z = Math.max(W / c.w, H / c.h) * 1.12;           // zoom que faz a vitrine passar das bordas
+  const tx = W / 2 - Z * c.cx, ty = H / 2 - Z * c.cy;      // leva o centro da vitrine ao centro da tela
+  const camFim = `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0) scale(${Z.toFixed(3)})`;
+  const lojaIni = `translate3d(${(c.cx - W / 2 / Z).toFixed(1)}px,${(c.cy - H / 2 / Z).toFixed(1)}px,0) scale(${(1 / Z).toFixed(4)})`;
+  const ceuFim = `translate3d(${((W / 2 - c.cx) * .12).toFixed(1)}px,${((H / 2 - c.cy) * .12).toFixed(1)}px,0) scale(1.16)`;
+  const id = "translate3d(0,0,0) scale(1)";
+  const o = { duration: CAM.dur, easing: CAM.ease, fill: "forwards" };
+  walk.style.transformOrigin = sky.style.transformOrigin = lojaEl.style.transformOrigin = "0 0";
+  const ida = (a, b) => entrando ? [a, b] : [b, a];
+  camAnims.push(walk.animate(ida({ transform: id }, { transform: camFim }), o));
+  camAnims.push(sky.animate(ida({ transform: id }, { transform: ceuFim }), o));
+  const op = entrando
+    ? [{ opacity: 0, offset: 0 }, { opacity: 0, offset: .38 }, { opacity: 1, offset: .8 }, { opacity: 1, offset: 1 }]
+    : [{ opacity: 1, offset: 0 }, { opacity: 1, offset: .15 }, { opacity: 0, offset: .55 }, { opacity: 0, offset: 1 }];
+  camAnims.push(lojaEl.animate(ida({ transform: lojaIni }, { transform: id }), o));
+  camAnims.push(lojaEl.animate(op, { duration: CAM.dur, easing: "linear", fill: "forwards" }));
+}
+function soltaCamera() { camAnims.forEach(a => a.cancel()); camAnims = []; walk.style.transform = ""; }
 function abrirLoja(slug, { empurrar = true } = {}) {
   const l = LOJAS[idx(slug)]; if (!l) return;
   const trocando = !lojaEl.hidden && !lojaEl.classList.contains("saindo");
@@ -431,53 +425,45 @@ function abrirLoja(slug, { empurrar = true } = {}) {
   $("#lojaScroll").scrollTop = 0;
   document.title = `${l.nome} · Guaratiba Shopping`;
   if (empurrar) history.pushState({ loja: slug }, "", `#/${slug}`);
+  if (!trocando) soltaCamera();
   irPara(document.getElementById("b-" + slug), false);
   lojaEl.classList.remove("saindo");
   lojaEl.classList.toggle("trocando", trocando);
+  if (trocando) { camAnims.forEach(a => a.finish && a.finish()); }
   if (!trocando) {
-    const c = recorteDaVitrine(slug);
-    lojaEl.classList.remove("cheia");
-    if (c && !reduz) {
-      lojaEl.style.setProperty("--ct", c.t + "px"); lojaEl.style.setProperty("--cr", c.r + "px");
-      lojaEl.style.setProperty("--cb", c.b + "px"); lojaEl.style.setProperty("--cl", c.l + "px");
-      walk.style.transformOrigin = `${c.cx}px ${c.cy}px`;
-      lojaEl.classList.add("de-vitrine");
-    } else lojaEl.classList.remove("de-vitrine");
+    const c = reduz ? null : recorteDaVitrine(slug);
+    lojaEl.classList.remove("cheia", "camera");
     document.querySelectorAll(".loja-baia.acesa").forEach(b => b.classList.remove("acesa"));
     document.getElementById("b-" + slug)?.classList.add("acesa");
     lojaEl.hidden = false;
     void lojaEl.offsetWidth;
-    requestAnimationFrame(() => { lojaEl.classList.add("cheia"); document.body.classList.add("entrando"); });
-    setTimeout(() => { lojaEl.classList.add("cheia"); document.body.classList.add("entrando"); }, 60);
+    if (c) { lojaEl.classList.add("camera", "cheia"); camera(c, true); }
+    else { requestAnimationFrame(() => lojaEl.classList.add("cheia")); setTimeout(() => lojaEl.classList.add("cheia"), 60); }
+    document.body.classList.add("entrando");
     Som.porta(); Ceu.pausa && Ceu.pausa(true);
   }
-  setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 700);
-}
-function recorteSemZoom(slug) {
-  const sky = $("#sky");
-  walk.style.transition = sky.style.transition = "none";
-  document.body.classList.remove("entrando");
-  const c = recorteDaVitrine(slug);
-  if (c) walk.style.transformOrigin = `${c.cx}px ${c.cy}px`;
-  document.body.classList.add("entrando");
-  void walk.offsetWidth;
-  walk.style.transition = sky.style.transition = "";
-  return c;
+  setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 800);
 }
 function fecharLoja({ voltar = true } = {}) {
   if (lojaEl.hidden) return;
   const slug = atual?.slug;
-  const c = slug && recorteSemZoom(slug);
-  if (c && !reduz) {
-    lojaEl.style.setProperty("--ct", c.t + "px"); lojaEl.style.setProperty("--cr", c.r + "px");
-    lojaEl.style.setProperty("--cb", c.b + "px"); lojaEl.style.setProperty("--cl", c.l + "px");
-    lojaEl.classList.add("de-vitrine");
-  } else lojaEl.classList.remove("de-vitrine");
-  lojaEl.classList.add("saindo"); lojaEl.classList.remove("cheia");
+  // mede a vitrine sem a câmera aplicada
+  let c = null;
+  if (!reduz && slug) {
+    camAnims.forEach(a => a.cancel()); camAnims = [];
+    c = recorteDaVitrine(slug);
+  }
+  lojaEl.classList.add("saindo"); lojaEl.classList.remove("trocando");
   document.body.classList.remove("entrando");
-  setTimeout(() => document.querySelectorAll(".loja-baia.acesa").forEach(b => b.classList.remove("acesa")), 900);
+  if (c) camera(c, false); else lojaEl.classList.remove("cheia");
+  setTimeout(() => document.querySelectorAll(".loja-baia.acesa").forEach(b => b.classList.remove("acesa")), 700);
   Ceu.pausa && Ceu.pausa(false);
-  setTimeout(() => { if (lojaEl.classList.contains("saindo")) { lojaEl.hidden = true; lojaEl.classList.remove("saindo", "trocando", "de-vitrine"); } }, reduz ? 0 : 980);
+  setTimeout(() => {
+    if (lojaEl.classList.contains("saindo")) {
+      lojaEl.hidden = true; lojaEl.classList.remove("saindo", "trocando", "camera", "cheia");
+      camAnims.forEach(a => a.cancel()); camAnims = [];
+    }
+  }, reduz ? 0 : CAM.dur + 30);
   document.title = "Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA";
   if (voltar) history.pushState({}, "", location.pathname + location.search);
   const b = slug && document.getElementById("b-" + slug);
