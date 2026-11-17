@@ -2,8 +2,6 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA</title>
 <meta name="description" content="Caminhe pela varanda do Guaratiba Shopping, na Praia de Guaratiba, em Prado (BA): 26 lojas, do café da manhã ao último brinde, com horário de cada uma em tempo real.">
@@ -11,7 +9,7 @@
 <meta property="og:title" content="Guaratiba Shopping · A Varanda do Sol">
 <meta property="og:description" content="26 lojas numa varanda só, na Praia de Guaratiba, Prado-BA. Veja o que está aberto agora.">
 <meta property="og:type" content="website">
-<meta property="og:image" content="https://samuelsalomaopassos-source.github.io/guaratiba-shopping/assets/og.png">
+<meta property="og:image" content="https://guaratiba-shopping.netlify.app/assets/og.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
@@ -21,7 +19,8 @@
 
 <!-- Céu (fixo): cor do horário, sol do logo, lua, estrelas, coqueiros -->
 <div class="sky" id="sky" aria-hidden="true">
-  <div class="stars" id="stars"></div>
+  <canvas id="ceu"></canvas>
+  <div class="passaros" id="passaros"></div>
   <div class="palms" id="palms"></div>
 </div>
 
@@ -47,17 +46,17 @@
 </div>
 
 <!-- Sol e lua (acima da varanda para poderem ser arrastados) -->
-<button class="sun" id="sun" type="button" aria-label="Sol: arraste para mudar a hora da visita" tabindex="-1"></button>
-<div class="moon" id="moon" aria-hidden="true"></div>
+<div class="sun" id="sun" aria-hidden="true"></div>
 
 <!-- A varanda -->
 <main class="walk" id="walk" tabindex="-1">
+  <div class="chao" aria-hidden="true"><div class="chao-plano"></div></div>
   <div class="track" id="track">
     <div class="roof" aria-hidden="true"></div>
     <div class="fascia" aria-hidden="true"></div>
-    <div class="bunting" aria-hidden="true"></div>
-    <div class="bulbs" aria-hidden="true"></div>
-    <div class="floor" aria-hidden="true"></div>
+    <div class="beiral" aria-hidden="true"></div>
+    <div class="fio" aria-hidden="true"></div>
+    <div class="grade" aria-hidden="true"></div>
 
     <section class="bay bay-entrada" id="inicio" aria-labelledby="titulo">
       <div class="entrada-texto">
@@ -78,7 +77,7 @@
     <div id="bays" class="bays"></div>
 
     <section class="bay bay-praca" id="praca" aria-labelledby="pracaTitulo">
-      <div class="pilar" aria-hidden="true"><i></i></div>
+      <div class="pilar" aria-hidden="true"><span class="mao e"></span><i></i></div>
       <div class="varal" aria-label="Fotos do Guaratiba Shopping">
         <span class="corda-varal c1" aria-hidden="true"></span><span class="corda-varal c2" aria-hidden="true"></span>
         <figure><img src="assets/fotos/fachada-dia.webp" alt="A varanda do Guaratiba Shopping de dia, com o telhado de telhas e o estacionamento" loading="lazy"><figcaption>A varanda de dia</figcaption></figure>
@@ -95,9 +94,12 @@
           <a class="btn-secondary" id="lnkWa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp do shopping</a>
           <a class="btn-secondary" id="lnkIg" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
         </div>
-        <button class="btn-link" id="btnVoltarInicio" type="button"><span aria-hidden="true">←</span> Voltar ao começo da varanda</button>
-        <p class="credito">Experiência digital por OFFSET studio</p>
+        <div class="praca-rodape">
+          <button class="btn-link" id="btnVoltarInicio" type="button"><span aria-hidden="true">←</span> Voltar ao começo da varanda</button>
+        </div>
       </div>
+      <div class="praca-postes" aria-hidden="true"></div>
+      <p class="credito">Experiência digital por OFFSET studio · Texturas: Poly Haven (CC0)</p>
     </section>
   </div>
 </main>
@@ -146,6 +148,7 @@
 </noscript>
 
 <script src="data.js"></script>
+<script src="sky.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
