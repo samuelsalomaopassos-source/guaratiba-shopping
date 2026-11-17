@@ -651,7 +651,7 @@ const Tempo = (() => {
   const LAT = -17.41, LON = -39.23;
   const IC = {
     sol: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.6" fill="#F2C230"/><g stroke="#E8862A" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></g></svg>`,
-    lua: `<svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.6A7 7 0 0 1 15.5 3.5z" fill="#F3E6CC"/></svg>`,
+    lua: `<svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.6A7 7 0 0 1 15.5 3.5z" fill="#8C93AE"/></svg>`,
     parcial: `<svg viewBox="0 0 24 24"><circle cx="9" cy="9" r="4" fill="#F2C230"/><path d="M7 19h10a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.6 1.6A3.3 3.3 0 0 0 7 19z" fill="#EEF1F4"/></svg>`,
     nuvem: `<svg viewBox="0 0 24 24"><path d="M6.5 19h11a4.3 4.3 0 0 0 .4-8.6 6 6 0 0 0-11.6 1.8A3.5 3.5 0 0 0 6.5 19z" fill="#D5DBE1"/></svg>`,
     chuva: `<svg viewBox="0 0 24 24"><path d="M6.5 15h11a4.3 4.3 0 0 0 .4-8.6 6 6 0 0 0-11.6 1.8A3.5 3.5 0 0 0 6.5 15z" fill="#C3CBD3"/><g stroke="#3FA7FF" stroke-width="1.8" stroke-linecap="round"><path d="M8 17.5l-1 3M12 17.5l-1 3M16 17.5l-1 3"/></g></svg>`,

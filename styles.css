@@ -146,7 +146,8 @@ body.escuro .clock input::-webkit-slider-runnable-track{background:rgba(251,245,
 .tempo-dica button{min-height:40px;padding:0 14px;border-radius:999px;background:var(--amarelo);color:var(--verde-esc);font-weight:600;font-size:14px;transition:transform .2s var(--ease)}
 .tempo-dica button:hover{transform:translateY(-2px)}
 .tempo h3{font-size:15px;margin:16px 0 8px;color:var(--verde)}
-.tempo-horas{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(52px,1fr);gap:6px;overflow-x:auto}
+.tempo-horas{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(52px,1fr);gap:6px;overflow-x:auto;scrollbar-width:none}
+.tempo-horas::-webkit-scrollbar{display:none}
 .tempo-horas div{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;background:#EDE3CF;font-size:13px}
 .tempo-horas svg{width:26px;height:26px}
 .tempo-horas strong{font-size:15px}
