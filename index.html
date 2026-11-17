@@ -12,7 +12,7 @@
 <meta property="og:image" content="https://guaratiba-shopping.netlify.app/assets/og.png">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="styles.css?v=6">
+<link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
 <a class="skip" href="#diretorio-lista">Pular para a lista de lojas</a>
@@ -51,6 +51,7 @@
 <!-- A varanda -->
 <main class="walk" id="walk" tabindex="-1">
   <div class="chao" aria-hidden="true"><div class="chao-plano"></div></div>
+  <div class="grama-frente" id="gramaFrente" aria-hidden="true"></div>
   <div class="track" id="track">
     <div class="roof" aria-hidden="true"></div>
     <div class="fascia" aria-hidden="true"></div>
@@ -59,18 +60,29 @@
     <div class="grade" aria-hidden="true"></div>
 
     <section class="bay bay-entrada" id="inicio" aria-labelledby="titulo">
+      <div class="frontao" aria-hidden="true">
+        <div class="frontao-telha"></div>
+        <svg class="frontao-borda" viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="-2,101 50,1 102,101" fill="none" stroke="#3B2416" stroke-width="16" vector-effect="non-scaling-stroke" stroke-linejoin="miter"/><polyline points="-2,101 50,1 102,101" fill="none" stroke="rgba(255,220,180,.18)" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="miter" transform="translate(0,-1.2)"/></svg>
+        <div class="frontao-sol" id="frontaoSol"></div>
+      </div>
+      <div class="portico" aria-hidden="true">
+        <span class="coluna e"><i></i></span><span class="coluna d"><i></i></span>
+        <span class="arandela a1"></span><span class="arandela a2"></span><span class="arandela a3"></span>
+      </div>
       <div class="entrada-texto">
         <h1 id="titulo">Guaratiba Shopping</h1>
         <p class="entrada-sub">26 lojas numa varanda só, a dois passos da Praia de Guaratiba, em Prado, Bahia.</p>
         <p class="agora"><span class="agora-num" id="abertasN">--</span> <span class="agora-txt" id="abertasTxt">de 26 lojas abertas agora</span></p>
         <button class="btn-primary" id="btnCaminhar" type="button">Caminhar pela varanda <span aria-hidden="true">→</span></button>
       </div>
+      <div class="canteiro-totem" aria-hidden="true"><div class="grama-canteiro" data-grama="2"></div></div>
       <div class="totem" aria-hidden="true">
         <div class="totem-sun" id="totemSun"></div>
         <div class="totem-word">GUARATIBA</div>
         <div class="totem-sub">SHOPPING</div>
       </div>
       <div class="palm-front" aria-hidden="true"></div>
+      <div class="palm-front esq" aria-hidden="true"></div>
     </section>
 
     <!-- baias geradas por app.js -->
@@ -99,6 +111,7 @@
         </div>
       </div>
       <div class="praca-postes" aria-hidden="true"></div>
+      <div class="canteiro-praca" aria-hidden="true"><div class="grama-canteiro" data-grama="4"></div></div>
       <p class="credito">Experiência digital por OFFSET studio · Texturas: Poly Haven (CC0)</p>
     </section>
   </div>
@@ -109,7 +122,7 @@
 
 <!-- Loja aberta (a porta abre) -->
 <div class="loja" id="loja" role="dialog" aria-modal="true" aria-labelledby="lojaNome" hidden>
-  <div class="loja-portas" aria-hidden="true"><span class="folha esq"></span><span class="folha dir"></span></div>
+  <div class="loja-brilho" aria-hidden="true"></div>
   <div class="loja-scroll" id="lojaScroll" tabindex="-1">
     <div class="loja-topo">
       <button class="btn-voltar" id="lojaFechar" type="button"><span aria-hidden="true">←</span> Varanda</button>
@@ -147,8 +160,8 @@
   </div>
 </noscript>
 
-<script src="data.js?v=6"></script>
-<script src="sky.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="data.js?v=8"></script>
+<script src="sky.js?v=8"></script>
+<script src="app.js?v=8"></script>
 </body>
 </html>

@@ -55,10 +55,38 @@ function coqueiro(o = {}) {
       fol += `M${px.toFixed(1)} ${py.toFixed(1)} l${(nx * fl + tx / L * 3).toFixed(1)} ${(Math.abs(ny * fl) + 6).toFixed(1)} M${px.toFixed(1)} ${py.toFixed(1)} l${(-nx * fl + tx / L * 3).toFixed(1)} ${(Math.abs(ny * fl) + 6).toFixed(1)} `;
     }
     const c = i % 3 === 0 ? cor2 : cor;
-    folhas += `<path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`;
+    const lado = Math.cos(ang) < 0 ? -1 : 1;
+    folhas += `<g class="fronde" style="transform-origin:${cx.toFixed(1)}px ${cy}px;--fd:${(-r() * 4).toFixed(2)}s;--ft:${(2.6 + r() * 1.8).toFixed(2)}s;--fa:${(lado * (2.5 + r() * 4)).toFixed(1)}deg"><path d="${d}" stroke="${c}" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="${fol}" stroke="${c}" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>`;
   }
   const cocos = `<g fill="${o.coco || cor}"><circle cx="${cx - 5}" cy="${cy + 6}" r="5"/><circle cx="${cx + 5}" cy="${cy + 7}" r="5"/><circle cx="${cx}" cy="${cy + 11}" r="4.6"/></g>`;
-  return `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="transform:scaleX(${o.inv ? -1 : 1})">${tronco}<g class="copa" style="--d:${(5 + r() * 4).toFixed(1)}s">${folhas}${cocos}</g></svg>`;
+  return `<svg viewBox="0 0 200 300" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="transform:scaleX(${o.inv ? -1 : 1})"><g class="tronco" style="--d:${(6 + r() * 3).toFixed(1)}s">${tronco}<g class="copa" style="transform-origin:${cx.toFixed(1)}px ${cy + 30}px;--d:${(5 + r() * 4).toFixed(1)}s;--dd:${(-r() * 6).toFixed(2)}s">${folhas}${cocos}</g></g></svg>`;
+}
+
+/* grama: lâminas finas em tons de verde, em três grupos que balançam com defasagem */
+function grama(o = {}) {
+  const r = rnd(o.seed || 3), W = o.w || 600, H = o.h || 80, n = o.n || 260;
+  const tons = o.tons || ["#2a5020", "#36652a", "#467d33", "#55913c", "#203f18", "#68a046", "#7aa84e", "#8a9a4a"];
+  const grupos = ["", "", ""];
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, h = H * (.3 + Math.pow(r(), .7) * .7), lean = (r() - .5) * 34, w = 1.3 + r() * 2.4;
+    const d = `M${(x - w).toFixed(1)} ${H} Q ${(x + lean * .4).toFixed(1)} ${(H - h * .6).toFixed(1)} ${(x + lean).toFixed(1)} ${(H - h).toFixed(1)} Q ${(x + lean * .4 + w * .4).toFixed(1)} ${(H - h * .55).toFixed(1)} ${(x + w).toFixed(1)} ${H} Z`;
+    grupos[i % 3] += `<path d="${d}" fill="${tons[Math.floor(r() * tons.length)]}"/>`;
+  }
+  let arbustos = "";
+  const folhaTons = ["#1f3d18", "#28501e", "#326226", "#3e7430", "#4c843a", "#5a9244"];
+  for (let i = 0; i < (o.arbustos || 0); i++) {
+    const x = (i + .5) * W / o.arbustos + (r() - .5) * 60, rr = H * (.5 + r() * .22);
+    let f = "";
+    for (let k = 0; k < 280; k++) {
+      const a = Math.PI + r() * Math.PI, d = rr * Math.sqrt(r());
+      const lx = x + Math.cos(a) * d * 1.35, ly = H + Math.sin(a) * d;
+      const alt = (H - ly) / rr; // folhas de cima mais claras
+      const tom = folhaTons[Math.min(5, Math.floor(alt * 4 + r() * 2))];
+      f += `<ellipse cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" rx="${(3.5 + r() * 4.5).toFixed(1)}" ry="${(2 + r() * 2.2).toFixed(1)}" transform="rotate(${(r() * 180).toFixed(0)} ${lx.toFixed(1)} ${ly.toFixed(1)})" fill="${tom}"/>`;
+    }
+    arbustos += `<g class="arbusto" style="animation-delay:${(-r() * 4).toFixed(1)}s">${f}</g>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><g class="lamina l0">${grupos[0]}</g>${arbustos}<g class="lamina l1">${grupos[1]}</g><g class="lamina l2">${grupos[2]}</g></svg>`;
 }
 
 /* ---------- horários ---------- */
@@ -128,8 +156,14 @@ baysEl.innerHTML = html;
 $("#brandSun").innerHTML = sol();
 $("#totemSun").innerHTML = sol("#F4F1EA");
 $("#sun").innerHTML = sol("#FFF4D6", "sol");
-$(".palm-front").innerHTML = `<div class="palm" style="inset:0">${coqueiro({ cor: "#2a5232", cor2: "#3b6a3c", tronco: "#6e5a44", coco: "#56662b", seed: 7 })}</div>`;
+document.querySelectorAll(".palm-front").forEach((el, i) => el.innerHTML = `<div class="palm" style="inset:0">${coqueiro({ cor: "#2a5232", cor2: "#3b6a3c", tronco: "#7a634a", coco: "#56662b", seed: 7 + i * 5, inv: i === 1 })}</div>`);
+$("#frontaoSol").innerHTML = sol();
 $("#lnkMaps").href = S.maps;
+/* canteiros de grama em primeiro plano (paralaxe mais rápida que a varanda) */
+const TILE = 640;
+$("#gramaFrente").innerHTML = Array.from({ length: Math.ceil(innerWidth / TILE) + 2 }, (_, i) =>
+  `<div class="gf-tile" style="left:${i * TILE}px">${grama({ w: TILE, h: 120, n: 320, seed: 11, arbustos: 3 })}</div>`).join("");
+document.querySelectorAll("[data-grama]").forEach((el, i) => el.innerHTML = grama({ w: 400, h: 70, n: 170, seed: 20 + i, arbustos: +el.dataset.grama || 0 }));
 $("#lnkWa").href = `https://wa.me/${S.whatsapp}`;
 $("#lnkIg").href = `https://instagram.com/${S.instagram}`;
 $("#nLojas").textContent = LOJAS.length;
@@ -170,7 +204,7 @@ const input = $("#hora");
 function posAstro(h, ini, fim) {
   const t = (h - ini) / (fim - ini);
   const W = innerWidth, roof = parseFloat(getComputedStyle($(".roof")).top);
-  const topo = Math.max(150, roof * 0.42), base = roof - 26;
+  const topo = Math.max(122, roof * 0.42), base = roof - 26;
   return { x: W * (0.08 + 0.84 * t), y: base - Math.sin(Math.PI * t) * (base - topo), vis: t >= 0 && t <= 1 };
 }
 
@@ -274,7 +308,10 @@ function aoRolar() {
   rafP = 0;
   const x = walk.scrollLeft;
   document.documentElement.style.setProperty("--scroll", x.toFixed(1));
-  if (!reduz) $("#palms").style.transform = `translate3d(${(-x * 0.22).toFixed(1)}px,0,0)`;
+  if (!reduz) {
+    $("#palms").style.transform = `translate3d(${(-x * 0.22).toFixed(1)}px,0,0)`;
+    $("#gramaFrente").style.transform = `translate3d(${(-((x * 1.35) % TILE)).toFixed(1)}px,0,0)`;
+  }
   Ceu.set({ scroll: x });
 }
 walk.addEventListener("scroll", () => { if (!rafP) rafP = requestAnimationFrame(aoRolar); }, { passive: true });
@@ -332,9 +369,15 @@ function corpoLoja(l) {
     </div>`;
 }
 
+function recorteDaVitrine(slug) {
+  const v = document.querySelector(`#b-${slug} .vitrine`); if (!v) return null;
+  const r = v.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+  if (r.right < 0 || r.left > W) return null;
+  return { t: r.top, r: W - r.right, b: H - r.bottom, l: r.left, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+}
 function abrirLoja(slug, { empurrar = true } = {}) {
   const l = LOJAS[idx(slug)]; if (!l) return;
-  const trocando = !lojaEl.hidden;
+  const trocando = !lojaEl.hidden && !lojaEl.classList.contains("saindo");
   atual = l;
   if (!trocando) ultimoFoco = document.activeElement;
   lojaEl.style.setProperty("--cor", l.cor);
@@ -344,17 +387,38 @@ function abrirLoja(slug, { empurrar = true } = {}) {
   document.title = `${l.nome} · Guaratiba Shopping`;
   if (empurrar) history.pushState({ loja: slug }, "", `#/${slug}`);
   irPara(document.getElementById("b-" + slug), false);
-  lojaEl.classList.remove("fechando");
+  lojaEl.classList.remove("saindo");
   lojaEl.classList.toggle("trocando", trocando);
-  if (!trocando) { lojaEl.hidden = false; Som.porta(); Ceu.pausa && Ceu.pausa(true); }
-  setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 420);
+  if (!trocando) {
+    const c = recorteDaVitrine(slug);
+    lojaEl.classList.remove("cheia");
+    if (c && !reduz) {
+      lojaEl.style.setProperty("--ct", c.t + "px"); lojaEl.style.setProperty("--cr", c.r + "px");
+      lojaEl.style.setProperty("--cb", c.b + "px"); lojaEl.style.setProperty("--cl", c.l + "px");
+      walk.style.transformOrigin = `${c.cx}px ${c.cy}px`;
+      lojaEl.classList.add("de-vitrine");
+    } else lojaEl.classList.remove("de-vitrine");
+    lojaEl.hidden = false;
+    void lojaEl.offsetWidth;
+    lojaEl.classList.add("cheia");
+    document.body.classList.add("entrando");
+    Som.porta(); Ceu.pausa && Ceu.pausa(true);
+  }
+  setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 700);
 }
 function fecharLoja({ voltar = true } = {}) {
   if (lojaEl.hidden) return;
-  lojaEl.classList.add("fechando");
-  Ceu.pausa && Ceu.pausa(false);
   const slug = atual?.slug;
-  setTimeout(() => { lojaEl.hidden = true; lojaEl.classList.remove("fechando", "trocando"); }, reduz ? 0 : 420);
+  const c = slug && recorteDaVitrine(slug);
+  if (c && !reduz) {
+    lojaEl.style.setProperty("--ct", c.t + "px"); lojaEl.style.setProperty("--cr", c.r + "px");
+    lojaEl.style.setProperty("--cb", c.b + "px"); lojaEl.style.setProperty("--cl", c.l + "px");
+    lojaEl.classList.add("de-vitrine");
+  } else lojaEl.classList.remove("de-vitrine");
+  lojaEl.classList.add("saindo"); lojaEl.classList.remove("cheia");
+  document.body.classList.remove("entrando");
+  Ceu.pausa && Ceu.pausa(false);
+  setTimeout(() => { if (lojaEl.classList.contains("saindo")) { lojaEl.hidden = true; lojaEl.classList.remove("saindo", "trocando", "de-vitrine"); } }, reduz ? 0 : 760);
   document.title = "Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA";
   if (voltar) history.pushState({}, "", location.pathname + location.search);
   const b = slug && document.getElementById("b-" + slug);
