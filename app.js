@@ -216,7 +216,7 @@ function posAstro(h, ini, fim) {
   return { x: W * (0.08 + 0.84 * t), y: base - Math.sin(Math.PI * t) * (base - topo), vis: t >= 0 && t <= 1 };
 }
 
-const GRADE = [[0,[8,14,44,.56]],[5,[8,14,44,.54]],[5.8,[70,58,120,.32]],[6.4,[255,150,110,.16]],[7.4,[255,255,255,0]],[16.2,[255,255,255,0]],[17.2,[255,170,90,.12]],[18,[255,120,60,.2]],[18.7,[110,70,130,.3]],[19.5,[30,36,90,.42]],[20.5,[8,14,44,.56]],[24,[8,14,44,.56]]];
+const GRADE = [[0,[22,26,64,.3]],[5,[22,26,64,.3]],[5.8,[70,58,120,.24]],[6.4,[255,150,110,.14]],[7.4,[255,255,255,0]],[16.2,[255,255,255,0]],[17.2,[255,170,90,.1]],[18,[255,120,60,.16]],[18.7,[110,70,130,.22]],[19.5,[40,40,96,.26]],[20.5,[22,26,64,.28]],[24,[22,26,64,.3]]];
 function gradeCor(h) {
   for (let i = 0; i < GRADE.length - 1; i++) { const [a, A] = GRADE[i], [b, B] = GRADE[i + 1];
     if (h >= a && h <= b) { const t = (h - a) / (b - a), m = A.map((v, k) => v + (B[k] - v) * t); return `rgba(${m.slice(0, 3).map(Math.round).join(",")},${m[3].toFixed(3)})`; } }
@@ -548,7 +548,7 @@ function toast(msg, ms = 3200) { const t = $("#toast"); t.textContent = msg; t.c
 /* ---------- som ambiente (gerado no navegador) ---------- */
 let somLigado = false;
 const Som = (() => {
-  let ctx, mar, marGain, master, violaoT, passaroT;
+  let ctx, mar, marGain, master, passaroT;
   function iniciar() {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
@@ -557,24 +557,93 @@ const Som = (() => {
     mar = ctx.createBufferSource(); mar.buffer = buf; mar.loop = true;
     const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 700;
     marGain = ctx.createGain(); marGain.gain.value = 0.5;
-    const lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = 0.11; lfoG.gain.value = 0.35;
+    const lfo = ctx.createOscillator(), lfoG = ctx.createGain(); lfo.frequency.value = 0.11; lfoG.gain.value = 0.2;
     lfo.connect(lfoG); lfoG.connect(marGain.gain); lfo.start();
     mar.connect(lp); lp.connect(marGain); marGain.connect(master); mar.start();
   }
-  function corda(freq, t, vol = 0.18) {
-    const sr = ctx.sampleRate, N = Math.round(sr / freq), len = sr * 2.2, buf = ctx.createBuffer(1, len, sr), d = buf.getChannelData(0);
-    for (let i = 0; i < N; i++) d[i] = Math.random() * 2 - 1;
-    for (let i = N; i < len; i++) d[i] = (d[i - N] + d[i - N + 1]) * 0.497;
-    const s = ctx.createBufferSource(), g = ctx.createGain(); s.buffer = buf; g.gain.value = vol;
-    s.connect(g); g.connect(master); s.start(t);
+  /* trilha praiana gerada ao vivo: violão de nylon em levada de ijexá/reggae, baixo redondo,
+     ganzá, conga e uma melodia de steel drum. Tudo sintetizado (WebAudio), sem arquivos de áudio. */
+  const BPM = 92, PASSO = 60 / BPM / 4;                     // semicolcheia
+  const nota = m => 440 * Math.pow(2, (m - 69) / 12);
+  // D7M – Bm7 – Em7 – A7 (cada um 1 compasso)
+  const HARM = [{ b: 38, a: [62, 66, 69, 73] }, { b: 35, a: [59, 62, 66, 69] }, { b: 40, a: [59, 62, 67, 71] }, { b: 33, a: [61, 64, 67, 69] }];
+  const MEL = [ // 8 compassos × 16 passos; null = pausa (pentatônica de Ré)
+    [78,null,null,76,null,null,74,null,71,null,null,null,74,null,76,null],[78,null,81,null,null,78,null,null,76,null,null,null,null,null,null,null],
+    [74,null,null,76,null,null,78,null,76,null,74,null,71,null,null,null],[69,null,null,null,71,null,74,null,null,null,null,null,null,null,null,null],
+    [81,null,null,78,null,null,76,null,78,null,null,76,74,null,null,null],[76,null,78,null,81,null,null,null,83,null,81,null,78,null,null,null],
+    [76,null,null,74,null,71,null,null,74,null,null,null,76,null,null,null],[74,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]];
+  const cacheKS = {};
+  function ks(freq, dur) {
+    const k = freq.toFixed(1) + dur; if (cacheKS[k]) return cacheKS[k];
+    const sr = ctx.sampleRate, N = Math.round(sr / freq), len = Math.round(sr * dur), buf = ctx.createBuffer(1, len, sr), d = buf.getChannelData(0);
+    for (let i = 0; i < N; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / N * .5);
+    for (let i = N; i < len; i++) d[i] = (d[i - N] + d[i - N + 1]) * 0.4985;
+    return cacheKS[k] = buf;
   }
-  const ACORDES = [[146.8, 220, 293.7, 370], [164.8, 246.9, 329.6, 392], [130.8, 196, 261.6, 329.6], [146.8, 220, 277.2, 370]];
-  let ac = 0;
-  function violao() {
-    if (!somLigado || noite(hora) < 0.5) return;
-    const t = ctx.currentTime + 0.05, a = ACORDES[ac++ % ACORDES.length];
-    a.forEach((f, i) => corda(f, t + i * 0.11));
-    corda(a[2] * 2, t + 0.9, 0.08); corda(a[1] * 2, t + 1.25, 0.08);
+  function corda(freq, t, vol, dur = 1.6, abafa = 0) {
+    const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    s.buffer = ks(freq, dur); f.type = "lowpass"; f.frequency.value = 2600;
+    g.gain.setValueAtTime(vol, t); if (abafa) g.gain.setTargetAtTime(0, t + abafa, .04);
+    s.connect(f); f.connect(g); g.connect(musica); s.start(t); s.stop(t + dur);
+  }
+  function baixo(m, t, d) {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = nota(m);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .015); g.gain.setTargetAtTime(.0001, t + d * .6, d * .25);
+    o.connect(g); g.connect(musica); o.start(t); o.stop(t + d + .4);
+  }
+  let ruido;
+  function ganza(t, v) {
+    const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+    s.buffer = ruido; f.type = "highpass"; f.frequency.value = 6500;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .008); g.gain.exponentialRampToValueAtTime(.0005, t + .07);
+    s.connect(f); f.connect(g); g.connect(musica); s.start(t, Math.random() * 2); s.stop(t + .09);
+  }
+  function conga(t, f0, v) {
+    const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
+    o.frequency.setValueAtTime(f0 * 1.5, t); o.frequency.exponentialRampToValueAtTime(f0, t + .04);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + .28);
+    o.connect(g); g.connect(musica); o.start(t); o.stop(t + .3);
+  }
+  function steel(m, t, v = .07) { // steel drum: parciais 1, 2 e 3 com decaimentos diferentes
+    const f = nota(m);
+    [[1, 1, .9], [2, .55, .5], [3, .22, .3], [4.2, .08, .15]].forEach(([p, a, d]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f * p;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * a, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+      o.connect(g); g.connect(eco); g.connect(musica); o.start(t); o.stop(t + d + .05);
+    });
+  }
+  let musica, eco, passoN = 0, proxT = 0, agendaT;
+  function montaMusica() {
+    musica = ctx.createGain(); musica.gain.value = .5; musica.connect(master);
+    const len = ctx.sampleRate * 3; ruido = ctx.createBuffer(1, len, ctx.sampleRate);
+    const d = ruido.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    // eco suave só para a melodia
+    eco = ctx.createGain(); eco.gain.value = .5;
+    const dl = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
+    dl.delayTime.value = PASSO * 3; fb.gain.value = .32; lp.type = "lowpass"; lp.frequency.value = 2200;
+    eco.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(musica);
+  }
+  function tocaPasso(i, t) {
+    const comp = Math.floor(i / 16), p = i % 16, h = HARM[comp % 4], sw = (p % 2) ? PASSO * .12 : 0; t += sw; // leve suingue
+    // ganzá: todas as semicolcheias, acento no contratempo
+    ganza(t, p % 4 === 2 ? .05 : p % 2 ? .022 : .032);
+    // conga do ijexá
+    if (p === 3) conga(t, 220, .16); if (p === 6) conga(t, 165, .2); if (p === 11) conga(t, 220, .13); if (p === 14) conga(t, 165, .18);
+    // baixo
+    if (p === 0) baixo(h.b, t, PASSO * 5); if (p === 6) baixo(h.b + 7, t, PASSO * 2); if (p === 8) baixo(h.b + 12, t, PASSO * 3);
+    if (p === 12) baixo(h.b + 7, t, PASSO * 2); if (p === 14) baixo(HARM[(comp + 1) % 4].b + 1, t, PASSO * 1.5);
+    // violão: dedilhado no tempo, batida abafada no contratempo
+    if (p === 0) h.a.forEach((m, k) => corda(nota(m - 12), t + k * .018, .14, 1.8));
+    if (p === 4 || p === 12) h.a.slice(1).forEach((m, k) => corda(nota(m - 12), t + k * .012, .09, .5, .1));
+    if (p === 7 || p === 10) corda(nota(h.a[3] - 12), t, .1, 1.2);
+    if (p === 14) h.a.slice(1).forEach((m, k) => corda(nota(m - 12), t + k * .012, .08, .5, .08));
+    // melodia de steel drum a partir do 3º ciclo, em ciclos alternados (respira)
+    const ciclo = Math.floor(comp / 8);
+    if (ciclo >= 1 && ciclo % 2 === 1) { const m = MEL[comp % 8][p]; if (m) steel(m, t, noite(hora) > .5 ? .055 : .07); }
+  }
+  function agenda() {
+    if (!ctx) return;
+    while (proxT < ctx.currentTime + .35) { tocaPasso(passoN++, proxT); proxT += PASSO; }
   }
   function passaro() {
     if (!somLigado || noite(hora) > 0.3) return;
@@ -591,12 +660,16 @@ const Som = (() => {
       if (!ctx) iniciar(); ctx.resume();
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 1.2);
-      clearInterval(violaoT); clearInterval(passaroT);
-      violaoT = setInterval(violao, 2600); passaroT = setInterval(passaro, 4200);
+      clearInterval(passaroT);
+      if (!musica) montaMusica();
+      musica.gain.cancelScheduledValues(ctx.currentTime); musica.gain.setValueAtTime(0, ctx.currentTime); musica.gain.linearRampToValueAtTime(.5, ctx.currentTime + 2.5);
+      proxT = ctx.currentTime + .15; passoN = 0;
+      clearInterval(agendaT); agendaT = setInterval(agenda, 90);
+      passaroT = setInterval(passaro, 4200);
       this.atualiza();
     },
-    desliga() { if (!ctx) return; master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6); clearInterval(violaoT); clearInterval(passaroT); },
-    atualiza() { if (ctx) marGain.gain.value = 0.5 - noite(hora) * 0.18; },
+    desliga() { if (!ctx) return; master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6); clearInterval(agendaT); clearInterval(passaroT); },
+    atualiza() { if (ctx) marGain.gain.value = 0.34 - noite(hora) * 0.1; },
     porta() {
       if (!somLigado || !ctx) return;
       const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
@@ -612,7 +685,7 @@ $("#btnSom").addEventListener("click", e => {
   e.currentTarget.setAttribute("aria-label", somLigado ? "Desligar o som ambiente" : "Ligar o som ambiente");
   $("#somIco").setAttribute("d", somLigado ? "M4 9h4l5-4v14l-5-4H4z M16.5 8.5a5 5 0 0 1 0 7 M19 6a8.5 8.5 0 0 1 0 12" : "M4 9h4l5-4v14l-5-4H4z M16 9l5 6 M21 9l-5 6");
   somLigado ? Som.liga() : Som.desliga();
-  toast(somLigado ? (noite(hora) > 0.5 ? "Som da varanda: mar e violão" : "Som da varanda: mar e passarinhos") : "Som desligado", 2000);
+  toast(somLigado ? (noite(hora) > 0.5 ? "Som da varanda: mar e ijexá ao luar" : "Som da varanda: mar, passarinhos e ijexá") : "Som desligado", 2200);
 });
 
 /* placas balançam quando entram na tela */
