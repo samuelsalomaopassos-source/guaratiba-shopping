@@ -93,6 +93,10 @@ function grama(o = {}) {
     arbustos += `<g>${f}</g>`;
   }
   const svg = c => `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">${c}</svg>`;
+  if (o.fundo) { // faixa contínua: cada camada vira uma imagem repetida (3 camadas no total, em vez de dezenas de SVGs)
+    const url = c => `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">${c}</svg>`)}")`;
+    return [grupos[0] + arbustos, grupos[1], grupos[2]].map((c, i) => `<div class="gl gl${i} gl-fundo" style="background-image:${url(c).replace(/"/g, "&quot;")}"></div>`).join("");
+  }
   return `<div class="gl gl0">${svg(grupos[0] + arbustos)}</div><div class="gl gl1">${svg(grupos[1])}</div><div class="gl gl2">${svg(grupos[2])}</div>`;
 }
 
@@ -168,9 +172,7 @@ $("#frontaoSol").innerHTML = sol();
 $("#lnkMaps").href = S.maps;
 /* canteiros de grama em primeiro plano (paralaxe mais rápida que a varanda) */
 const TILE = 640;
-const tileGrama = grama({ w: TILE, h: 120, n: 300, seed: 11, arbustos: 3 });
-$("#gramaFrente").innerHTML = Array.from({ length: Math.ceil(innerWidth / TILE) + 2 }, (_, i) =>
-  `<div class="gf-tile" style="left:${i * TILE}px">${tileGrama}</div>`).join("");
+$("#gramaFrente").innerHTML = grama({ w: TILE, h: 120, n: 300, seed: 11, arbustos: 3, fundo: true });
 document.querySelectorAll("[data-grama]").forEach((el, i) => el.innerHTML = grama({ w: 400, h: 70, n: 170, seed: 20 + i, arbustos: +el.dataset.grama || 0 }));
 $("#lnkWa").href = `https://wa.me/${S.whatsapp}`;
 $("#lnkIg").href = `https://instagram.com/${S.instagram}`;
@@ -325,7 +327,6 @@ function aoRolar() {
   plano.style.transform = `rotateX(-52deg) translate3d(${(-(x % 260)).toFixed(1)}px,0,0)`;
   if (!reduz) {
     $("#palms").style.transform = `translate3d(${(-x * 0.22).toFixed(1)}px,0,0)`;
-    $("#gramaFrente").style.transform = `translate3d(${(-((x * 1.35) % TILE)).toFixed(1)}px,0,0)`;
   }
   Ceu.set({ scroll: x });
 }
@@ -687,6 +688,31 @@ $("#btnSom").addEventListener("click", e => {
   somLigado ? Som.liga() : Som.desliga();
   toast(somLigado ? (noite(hora) > 0.5 ? "Som da varanda: mar e ijexá ao luar" : "Som da varanda: mar, passarinhos e ijexá") : "Som desligado", 2200);
 });
+
+/* física da caminhada: as placas penduradas balançam com a velocidade (inércia + mola amortecida)
+   e o capim da frente verga para trás quando você anda. Só transform/rotate, só nas placas visíveis. */
+(() => {
+  if (reduz) return;
+  const grama = $("#gramaFrente"); grama.style.transformOrigin = "50% 100%";
+  const itens = [...document.querySelectorAll(".aviso,.grupo-tabua")].map(el => ({ el, bay: el.closest(".loja-baia,.bay-grupo"), k: (el.classList.contains("grupo-tabua") ? .45 : 1) * (.8 + Math.random() * .4), a: 0, v: 0, l: 0, w: 0 }));
+  const mede = () => itens.forEach(b => { const r = b.bay.getBoundingClientRect(); b.l = r.left + walk.scrollLeft; b.w = r.width; });
+  mede(); addEventListener("resize", mede);
+  let ultX = walk.scrollLeft, raf = 0, gv = 0;
+  function passoFis() {
+    const x = walk.scrollLeft, dx = Math.max(-80, Math.min(80, x - ultX)); ultX = x;
+    const W = innerWidth; let ativo = Math.abs(dx) > .05;
+    for (const b of itens) {
+      if (b.l - x > W + 40 || b.l + b.w - x < -40) { if (b.a) { b.a = b.v = 0; b.el.style.rotate = ""; } continue; }
+      b.v += -dx * .03 * b.k - b.a * .05 * b.k; b.v *= .92; b.a = Math.max(-9, Math.min(9, b.a + b.v));
+      if (Math.abs(b.a) > .03 || Math.abs(b.v) > .01) { ativo = true; b.el.style.rotate = b.a.toFixed(2) + "deg"; }
+      else if (b.a) { b.a = b.v = 0; b.el.style.rotate = ""; }
+    }
+    gv += (dx - gv) * .12; if (Math.abs(gv) > .02) ativo = true; else gv = 0;
+    grama.style.transform = `translate3d(${(-((x * 1.35) % TILE)).toFixed(1)}px,0,0) skewX(${Math.max(-12, Math.min(12, -gv * .45)).toFixed(2)}deg)`;
+    raf = ativo ? requestAnimationFrame(passoFis) : 0;
+  }
+  walk.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(passoFis); }, { passive: true });
+})();
 
 /* placas balançam quando entram na tela */
 if ("IntersectionObserver" in window) {

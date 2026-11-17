@@ -90,7 +90,7 @@ a{color:inherit}
 
 /* grama em primeiro plano e canteiros */
 .grama-frente{position:fixed;left:0;bottom:-1svh;height:9svh;width:calc(100vw + 1280px);z-index:8;pointer-events:none;will-change:transform}
-.gf-tile{position:absolute;bottom:0;width:640px;height:100%}
+.gl-fundo{background-repeat:repeat-x;background-size:640px 100%;background-position:0 100%}
 .gf-tile svg,.grama-canteiro svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .gl{position:absolute;inset:0;transform-origin:50% 100%;will-change:transform;filter:brightness(calc(.4 + var(--dia) * .6 + var(--noite) * .18));animation:vento 3.2s ease-in-out infinite alternate}
 .gl1{animation-duration:2.7s;animation-delay:-1.2s}.gl2{animation-duration:3.8s;animation-delay:-2.1s}
