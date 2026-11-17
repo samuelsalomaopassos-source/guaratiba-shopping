@@ -221,11 +221,14 @@ body.escuro .grupo-chao{color:var(--creme-claro)}
 /* ---------- LOJA ABERTA ---------- */
 .loja{position:fixed;inset:0;z-index:40;perspective:1600px}
 .loja-portas{position:absolute;inset:0;display:flex;z-index:2;pointer-events:none}
-.folha{flex:1;background:var(--madeira);transition:transform .8s var(--ease)}
+.folha{flex:1;background:var(--madeira);animation:.85s var(--ease) .05s both}
 .folha.esq{transform-origin:left center;border-right:3px solid var(--madeira-esc)}
 .folha.dir{transform-origin:right center;border-left:3px solid var(--madeira-esc)}
-.loja.aberta .folha.esq{transform:rotateY(-105deg)}
-.loja.aberta .folha.dir{transform:rotateY(105deg)}
+.folha.esq{animation-name:abreE}.folha.dir{animation-name:abreD}
+@keyframes abreE{from{transform:none}to{transform:rotateY(-105deg);visibility:hidden}}
+@keyframes abreD{from{transform:none}to{transform:rotateY(105deg);visibility:hidden}}
+.loja{transition:opacity .4s var(--ease)}
+.loja.fechando{opacity:0}
 .loja-scroll{outline:none;position:absolute;inset:0;overflow-y:auto;background:var(--cor);color:var(--tinta-loja);overscroll-behavior:contain}
 .loja-topo{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:max(12px,env(safe-area-inset-top)) 16px 12px;background:var(--cor)}
 .btn-voltar{height:44px;padding:0 16px;border-radius:999px;background:var(--tinta-loja);color:var(--cor);font-weight:600;font-size:16px;display:flex;align-items:center;gap:8px}
@@ -259,12 +262,13 @@ body.escuro .grupo-chao{color:var(--creme-claro)}
 .loja-vizinhas button:hover{transform:translateY(-2px)}
 .loja-vizinhas strong{display:block;font-size:19px;margin-top:4px}
 .loja-vizinhas .prox{text-align:right}
-.loja-corpo > *{opacity:0;transform:translateY(22px)}
-.loja.aberta .loja-corpo > *{opacity:1;transform:none;transition:opacity .5s var(--ease),transform .6s var(--ease)}
-.loja.aberta .loja-corpo > :nth-child(1){transition-delay:.35s}
-.loja.aberta .loja-corpo > :nth-child(2){transition-delay:.43s}
-.loja.aberta .loja-corpo > :nth-child(3){transition-delay:.51s}
-.loja.aberta .loja-corpo > :nth-child(4){transition-delay:.59s}
+.loja-corpo > *{animation:sobe .6s var(--ease) both}
+.loja-corpo > :nth-child(1){animation-delay:.35s}
+.loja-corpo > :nth-child(2){animation-delay:.43s}
+.loja-corpo > :nth-child(3){animation-delay:.51s}
+.loja-corpo > :nth-child(4){animation-delay:.59s}
+.loja.trocando .folha{display:none}
+.loja.trocando .loja-corpo > *{animation-delay:0s}
 @media (min-width:900px){
   .loja-corpo{grid-template-columns:1.05fr 1fr;align-items:start;column-gap:56px;padding-top:24px}
   .loja-placa{position:sticky;top:90px;grid-row:span 2}

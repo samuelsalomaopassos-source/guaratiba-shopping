@@ -280,20 +280,16 @@ function abrirLoja(slug, { empurrar = true } = {}) {
   document.title = `${l.nome} · Guaratiba Shopping`;
   if (empurrar) history.pushState({ loja: slug }, "", `#/${slug}`);
   irPara(document.getElementById("b-" + slug), false);
-  if (!trocando) {
-    lojaEl.hidden = false; lojaEl.classList.remove("aberta");
-    requestAnimationFrame(() => requestAnimationFrame(() => lojaEl.classList.add("aberta")));
-    Som.porta();
-  } else {
-    lojaEl.classList.remove("aberta"); void lojaEl.offsetWidth; lojaEl.classList.add("aberta");
-  }
+  lojaEl.classList.remove("fechando");
+  lojaEl.classList.toggle("trocando", trocando);
+  if (!trocando) { lojaEl.hidden = false; Som.porta(); }
   setTimeout(() => $("#lojaScroll").focus({ preventScroll: true }), trocando ? 0 : 420);
 }
 function fecharLoja({ voltar = true } = {}) {
   if (lojaEl.hidden) return;
-  lojaEl.classList.remove("aberta");
+  lojaEl.classList.add("fechando");
   const slug = atual?.slug;
-  setTimeout(() => { lojaEl.hidden = true; }, reduz ? 0 : 520);
+  setTimeout(() => { lojaEl.hidden = true; lojaEl.classList.remove("fechando", "trocando"); }, reduz ? 0 : 420);
   document.title = "Guaratiba Shopping · Tudo em apenas um lugar · Praia de Guaratiba, Prado-BA";
   if (voltar) history.pushState({}, "", location.pathname + location.search);
   const b = slug && document.getElementById("b-" + slug);
@@ -351,7 +347,7 @@ function listarDiretorio(q = "") {
 }
 function abrirDir() {
   dirAberto = true; listarDiretorio($("#busca").value); dirEl.hidden = false;
-  requestAnimationFrame(() => requestAnimationFrame(() => dirEl.classList.add("on")));
+  setTimeout(() => dirEl.classList.add("on"), 20);
   setTimeout(() => $("#busca").focus(), 200);
 }
 function fecharDir() {
