@@ -723,7 +723,7 @@ const Tempo = (() => {
       return `<div><span>${i === 0 ? "Hoje" : DIAS_C[dt.getDay()]}</span>${IC[dd.i]}<em>${dd.t}</em><small>${dados.daily.precipitation_probability_max[i]}%</small><strong>${Math.round(dados.daily.temperature_2m_min[i])}° / ${Math.round(dados.daily.temperature_2m_max[i])}°</strong></div>`;
     }).join("");
   }
-  function abrir() { if (!dados) return; painel(); const t = $("#tempo"); t.hidden = false; requestAnimationFrame(() => t.classList.add("on")); $("#btnTempo").setAttribute("aria-expanded", "true"); $("#tempoFechar").focus(); }
+  function abrir() { if (!dados) return; painel(); const t = $("#tempo"); t.hidden = false; setTimeout(() => t.classList.add("on"), 20); $("#btnTempo").setAttribute("aria-expanded", "true"); $("#tempoFechar").focus(); }
   function fechar() { const t = $("#tempo"); t.classList.remove("on"); $("#btnTempo").setAttribute("aria-expanded", "false"); setTimeout(() => t.hidden = true, 250); }
   $("#btnTempo").addEventListener("click", () => $("#tempo").hidden ? abrir() : fechar());
   $("#tempoFechar").addEventListener("click", () => { fechar(); $("#btnTempo").focus(); });
