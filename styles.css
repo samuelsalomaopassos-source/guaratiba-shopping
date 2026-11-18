@@ -123,17 +123,18 @@ html.leve .gl,html.leve .fr,html.leve .pl-corpo,html.leve .palm.balanca,html.lev
 .clock{position:fixed;z-index:20;left:16px;right:16px;top:calc(max(12px,env(safe-area-inset-top)) + 54px);display:flex;align-items:center;gap:12px;color:var(--creme-claro);text-shadow:0 1px 8px rgba(0,0,0,.4)}
 .clock-label{font-weight:600;font-size:15px;white-space:nowrap;min-width:116px}
 .clock-label #horaQuando{font-weight:400;opacity:.9}
-.clock input{flex:1;max-width:420px;-webkit-appearance:none;appearance:none;height:30px;background:transparent}
+.clock input{flex:1 1 60px;min-width:48px;width:0;max-width:420px;-webkit-appearance:none;appearance:none;height:30px;background:transparent}
 .clock input::-webkit-slider-runnable-track{height:6px;border-radius:6px;background:rgba(10,22,18,.42)}
 .clock input::-moz-range-track{height:6px;border-radius:6px;background:rgba(10,22,18,.42)}
 .clock input::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-10px;border-radius:50%;background:var(--amarelo);border:4px solid var(--laranja);box-shadow:0 0 14px rgba(255,200,90,.8)}
 .clock input::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--amarelo);border:4px solid var(--laranja)}
-.clock-now{height:32px;padding:0 12px;border-radius:999px;background:var(--creme-claro);color:var(--verde-esc);font-weight:600;font-size:14px;text-shadow:none}
+.clock-now{flex:0 0 auto;height:32px;padding:0 12px;border-radius:999px;background:var(--creme-claro);color:var(--verde-esc);font-weight:600;font-size:14px;text-shadow:none}
 body.escuro .clock input::-webkit-slider-runnable-track{background:rgba(251,245,232,.28)}
-.tempo-chip{margin-left:auto;height:36px;padding:0 12px 0 8px;border-radius:999px;background:rgba(10,22,18,.55);color:var(--creme-claro);display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px;text-shadow:none;transition:transform .25s var(--ease),background-color .25s}
+.tempo-chip{flex:0 0 auto;margin-left:auto;height:36px;padding:0 12px 0 8px;border-radius:999px;background:rgba(10,22,18,.55);color:var(--creme-claro);display:flex;align-items:center;gap:6px;font-weight:600;font-size:15px;text-shadow:none;transition:transform .25s var(--ease),background-color .25s}
 .tempo-chip:hover{transform:translateY(-2px);background:rgba(10,22,18,.7)}
 .tempo-ico,.tempo-ico svg{width:24px;height:24px;display:block}
 @media (min-width:700px){ .tempo-chip{margin-left:12px} }
+@media (max-width:420px){ .clock{gap:8px;left:12px;right:12px} .clock-label{min-width:0;font-size:14px} .clock-now{padding:0 10px} .tempo-chip{padding:0 10px 0 6px} }
 
 /* chuva: riscos finos que caem na frente da cena */
 .chuva{position:fixed;inset:-10% 0 0 0;z-index:9;pointer-events:none;opacity:0;transition:opacity 1.2s;will-change:transform;

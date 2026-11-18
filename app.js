@@ -741,7 +741,7 @@ $("#btnSom").addEventListener("click", e => {
 });
 
 /* coco: tocar na copa de um coqueiro da varanda balança a copa e derruba um coco verde que quica e rola.
-   1 em 20 cai "na porta" de uma loja e abre ela. */
+*/
 (() => {
   const track = $("#track");
   const piso = () => { const v = getComputedStyle(document.documentElement).getPropertyValue("--floorTop").trim(); return parseFloat(v) / 100 * innerHeight; };
@@ -773,16 +773,7 @@ $("#btnSom").addEventListener("click", e => {
       ], { duration: T, fill: "forwards" });
       c.firstChild.animate([{ rotate: "0deg" }, { rotate: `${(rola / (tam * .5) * 57.3 + dir * 120).toFixed(0)}deg` }], { duration: T, easing: "cubic-bezier(.3,.2,.3,1)", fill: "forwards" });
       setTimeout(() => Som.coco(), T * .3);
-      const sorte = Math.random() < 1 / 20 || params.get("sorte") !== null;
       setTimeout(() => {
-        if (sorte) {
-          const cx = x0 + rola, bays = [...document.querySelectorAll(".loja-baia")];
-          let alvo = bays[0], d = 1e9;
-          bays.forEach(bb => { const m = bb.offsetLeft + bb.offsetWidth / 2, dd = Math.abs(m - cx); if (dd < d) { d = dd; alvo = bb; } });
-          const l = LOJAS[idx(alvo.dataset.slug)];
-          toast(`Sorte sua! O coco rolou até a porta da ${l.nome}`, 2600);
-          setTimeout(() => abrirLoja(l.slug), 900);
-        }
         c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 2200, fill: "forwards" }).onfinish = () => c.remove();
         setTimeout(() => c.remove(), 3400);
       }, T);
@@ -877,7 +868,9 @@ const Tempo = (() => {
       $("#btnTempo").hidden = false;
       carregarMare();
       aplicarHora();
-    } catch (_) { /* sem previsão: o site segue normal */ }
+    } catch (_) { /* sem previsão: tenta de novo algumas vezes; se não der, o site segue normal */
+      if ((carregar.n = (carregar.n || 0) + 1) < 4) setTimeout(carregar, 3000 * carregar.n);
+    }
   }
   /* maré (nível do mar com a maré astronômica) e ondas, pela API marinha do Open-Meteo, em frente à praia */
   let mare = null;
