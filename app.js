@@ -349,9 +349,28 @@ function irPara(el, suave = !reduz) {
 
 /* ---------- loja aberta ---------- */
 const lojaEl = $("#loja");
-let atual = null, ultimoFoco = null;
+let atual = null, ultimoFoco = null, portaSlug = null;
 const idx = slug => LOJAS.findIndex(l => l.slug === slug);
 
+/* "você está aqui": quem chega pelo QR da porta vê as vizinhas de verdade (ordem da varanda) e a quantos passos estão */
+const PASSOS_POR_LOJA = 6;
+function vocAqui(l) {
+  const bays = [...document.querySelectorAll(".loja-baia")], i = bays.findIndex(b => b.dataset.slug === l.slug);
+  const passos = j => Math.max(PASSOS_POR_LOJA, Math.round(Math.abs(j - i) * PASSOS_POR_LOJA / 2) * 2);
+  const loja = j => LOJAS[idx(bays[j].dataset.slug)];
+  const vz = [];
+  if (i > 0) vz.push(`<button type="button" data-ir="${bays[i - 1].dataset.slug}"><span>← ${passos(i - 1)} passos</span><strong>${loja(i - 1).nome}</strong></button>`);
+  if (i < bays.length - 1) vz.push(`<button type="button" data-ir="${bays[i + 1].dataset.slug}"><span>${passos(i + 1)} passos →</span><strong>${loja(i + 1).nome}</strong></button>`);
+  // uma sugestão de outro tipo de loja, a mais perto daqui
+  const quer = l.grupo === "noite" ? ["manha", "moda"] : ["noite"];
+  let melhor = -1;
+  for (const soAbertas of [true, false]) {
+    bays.forEach((b, j) => { const o = LOJAS[idx(b.dataset.slug)]; if (Math.abs(j - i) > 1 && quer.includes(o.grupo) && (!soAbertas || o._st.on) && (melhor < 0 || Math.abs(j - i) < Math.abs(melhor - i))) melhor = j; });
+    if (melhor >= 0) break;
+  }
+  const sug = melhor >= 0 ? `<p class="aqui-sug">A ${passos(melhor)} passos daqui: <button type="button" data-ir="${bays[melhor].dataset.slug}">${loja(melhor).nome}</button> · ${loja(melhor).cat.toLowerCase()}</p>` : "";
+  return `<div class="aqui-box"><p class="aqui-tit"><span class="aqui-pin" aria-hidden="true"></span>Você está na porta desta loja</p><div class="aqui-viz">${vz.join("")}</div>${sug}</div>`;
+}
 function corpoLoja(l) {
   const st = status(l, diaHoje, hora);
   const acoes = [];
@@ -371,6 +390,7 @@ function corpoLoja(l) {
       <h2 id="lojaNome">${l.nome}</h2>
       <p class="loja-meta">${l.num ? `Loja ${l.num} · ` : ""}${l.cat}</p>
       <p class="loja-status ${st.on ? "" : "fechada"}">${st.txt}${manual ? ` <small>(às ${fmtH(Math.min(hora, 23.99))})</small>` : ""}</p>
+      ${l.slug === portaSlug ? vocAqui(l) : ""}
       <blockquote class="loja-frase">“${l.frase}”</blockquote>
       <p class="loja-texto">${l.texto}</p>
       <div class="loja-acoes">${acoes.join("")}</div>
@@ -420,7 +440,7 @@ function soltaCamera() { camAnims.forEach(a => a.cancel()); camAnims = []; walk.
 function abrirLoja(slug, { empurrar = true } = {}) {
   const l = LOJAS[idx(slug)]; if (!l) return;
   const trocando = !lojaEl.hidden && !lojaEl.classList.contains("saindo");
-  atual = l;
+  atual = l; Som.clima(l);
   if (!trocando) ultimoFoco = document.activeElement;
   lojaEl.style.setProperty("--cor", l.cor);
   lojaEl.style.setProperty("--tinta-loja", l.tinta);
@@ -456,6 +476,7 @@ function fecharLoja({ voltar = true } = {}) {
     camAnims.forEach(a => a.cancel()); camAnims = [];
     c = recorteDaVitrine(slug);
   }
+  Som.clima(null);
   lojaEl.classList.add("saindo"); lojaEl.classList.remove("trocando");
   document.body.classList.remove("entrando");
   if (c) camera(c, false); else lojaEl.classList.remove("cheia");
@@ -585,37 +606,55 @@ const Som = (() => {
     const s = ctx.createBufferSource(), g = ctx.createGain(), f = ctx.createBiquadFilter();
     s.buffer = ks(freq, dur); f.type = "lowpass"; f.frequency.value = 2600;
     g.gain.setValueAtTime(vol, t); if (abafa) g.gain.setTargetAtTime(0, t + abafa, .04);
-    s.connect(f); f.connect(g); g.connect(musica); s.start(t); s.stop(t + dur);
+    s.connect(f); f.connect(g); g.connect(bus.violao); s.start(t); s.stop(t + dur);
   }
   function baixo(m, t, d) {
     const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine"; o.frequency.value = nota(m);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.32, t + .015); g.gain.setTargetAtTime(.0001, t + d * .6, d * .25);
-    o.connect(g); g.connect(musica); o.start(t); o.stop(t + d + .4);
+    o.connect(g); g.connect(bus.baixo); o.start(t); o.stop(t + d + .4);
   }
   let ruido;
   function ganza(t, v) {
     const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
     s.buffer = ruido; f.type = "highpass"; f.frequency.value = 6500;
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .008); g.gain.exponentialRampToValueAtTime(.0005, t + .07);
-    s.connect(f); f.connect(g); g.connect(musica); s.start(t, Math.random() * 2); s.stop(t + .09);
+    s.connect(f); f.connect(g); g.connect(bus.perc); s.start(t, Math.random() * 2); s.stop(t + .09);
   }
   function conga(t, f0, v) {
     const o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sine";
     o.frequency.setValueAtTime(f0 * 1.5, t); o.frequency.exponentialRampToValueAtTime(f0, t + .04);
     g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(.001, t + .28);
-    o.connect(g); g.connect(musica); o.start(t); o.stop(t + .3);
+    o.connect(g); g.connect(bus.perc); o.start(t); o.stop(t + .3);
   }
   function steel(m, t, v = .07) { // steel drum: parciais 1, 2 e 3 com decaimentos diferentes
     const f = nota(m);
     [[1, 1, .9], [2, .55, .5], [3, .22, .3], [4.2, .08, .15]].forEach(([p, a, d]) => {
       const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = f * p;
       g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * a, t + .006); g.gain.exponentialRampToValueAtTime(.0001, t + d);
-      o.connect(g); g.connect(eco); g.connect(musica); o.start(t); o.stop(t + d + .05);
+      o.connect(g); g.connect(bus.steel); o.start(t); o.stop(t + d + .05);
     });
   }
-  let musica, eco, passoN = 0, proxT = 0, agendaT;
+  let musica, eco, passoN = 0, proxT = 0, agendaT, bus = {}, mixAtual = null, melodiaSempre = false;
+  /* cada loja muda a mixagem: café puxa o violão, moda puxa o steel drum, comida e bar puxam a percussão e o baixo */
+  const MIX = {
+    rua: { violao: 1, baixo: 1, perc: 1, steel: 1 },
+    manha: { violao: 1.35, baixo: .8, perc: .5, steel: .6 },
+    moda: { violao: .85, baixo: .9, perc: .8, steel: 1.45 },
+    servicos: { violao: 1.05, baixo: .9, perc: .7, steel: .9 },
+    noite: { violao: .85, baixo: 1.3, perc: 1.45, steel: .85 },
+    acaraje: { violao: .7, baixo: 1.25, perc: 1.9, steel: .6 },
+  };
+  function aplicaMix(nome) {
+    mixAtual = nome; if (!musica) return;
+    const m = MIX[nome] || MIX.rua, t = ctx.currentTime;
+    for (const k in bus) bus[k].gain.setTargetAtTime(m[k], t, .5);
+    // dentro da loja o mar fica mais distante
+    marGain.gain.setTargetAtTime(nome === "rua" ? .34 - noite(hora) * .1 : .12, t, .6);
+    melodiaSempre = nome === "moda";
+  }
   function montaMusica() {
     musica = ctx.createGain(); musica.gain.value = .5; musica.connect(master);
+    ["violao", "baixo", "perc", "steel"].forEach(k => { bus[k] = ctx.createGain(); bus[k].connect(musica); });
     const len = ctx.sampleRate * 3; ruido = ctx.createBuffer(1, len, ctx.sampleRate);
     const d = ruido.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     // eco suave só para a melodia
@@ -623,6 +662,8 @@ const Som = (() => {
     const dl = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
     dl.delayTime.value = PASSO * 3; fb.gain.value = .32; lp.type = "lowpass"; lp.frequency.value = 2200;
     eco.connect(dl); dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(musica);
+    bus.steel.connect(eco);
+    aplicaMix(mixAtual || "rua");
   }
   function tocaPasso(i, t) {
     const comp = Math.floor(i / 16), p = i % 16, h = HARM[comp % 4], sw = (p % 2) ? PASSO * .12 : 0; t += sw; // leve suingue
@@ -640,7 +681,7 @@ const Som = (() => {
     if (p === 14) h.a.slice(1).forEach((m, k) => corda(nota(m - 12), t + k * .012, .08, .5, .08));
     // melodia de steel drum a partir do 3º ciclo, em ciclos alternados (respira)
     const ciclo = Math.floor(comp / 8);
-    if (ciclo >= 1 && ciclo % 2 === 1) { const m = MEL[comp % 8][p]; if (m) steel(m, t, noite(hora) > .5 ? .055 : .07); }
+    if (ciclo >= 1 && (ciclo % 2 === 1 || melodiaSempre)) { const m = MEL[comp % 8][p]; if (m) steel(m, t, noite(hora) > .5 ? .055 : .07); }
   }
   function agenda() {
     if (!ctx) return;
@@ -670,7 +711,17 @@ const Som = (() => {
       this.atualiza();
     },
     desliga() { if (!ctx) return; master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6); clearInterval(agendaT); clearInterval(passaroT); },
-    atualiza() { if (ctx) marGain.gain.value = 0.34 - noite(hora) * 0.1; },
+    atualiza() { if (ctx && (mixAtual || "rua") === "rua") marGain.gain.value = 0.34 - noite(hora) * 0.1; },
+    clima(l) { const nome = !l ? "rua" : l.slug.startsWith("acaraje") ? "acaraje" : l.grupo; if (nome !== mixAtual) aplicaMix(nome); },
+    coco() { // baque surdo do coco na calçada
+      if (!somLigado || !ctx) return;
+      const t = ctx.currentTime + .02, o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(55, t + .12);
+      g.gain.setValueAtTime(.5, t); g.gain.exponentialRampToValueAtTime(.001, t + .25);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + .3);
+      [.32, .5].forEach((d, k) => { const o2 = ctx.createOscillator(), g2 = ctx.createGain(); o2.frequency.setValueAtTime(120, t + d); o2.frequency.exponentialRampToValueAtTime(60, t + d + .08);
+        g2.gain.setValueAtTime(.18 / (k + 1), t + d); g2.gain.exponentialRampToValueAtTime(.001, t + d + .15); o2.connect(g2); g2.connect(master); o2.start(t + d); o2.stop(t + d + .2); });
+    },
     porta() {
       if (!somLigado || !ctx) return;
       const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
@@ -688,6 +739,56 @@ $("#btnSom").addEventListener("click", e => {
   somLigado ? Som.liga() : Som.desliga();
   toast(somLigado ? (noite(hora) > 0.5 ? "Som da varanda: mar e ijexá ao luar" : "Som da varanda: mar, passarinhos e ijexá") : "Som desligado", 2200);
 });
+
+/* coco: tocar na copa de um coqueiro da varanda balança a copa e derruba um coco verde que quica e rola.
+   1 em 20 cai "na porta" de uma loja e abre ela. */
+(() => {
+  const track = $("#track");
+  const piso = () => { const v = getComputedStyle(document.documentElement).getPropertyValue("--floorTop").trim(); return parseFloat(v) / 100 * innerHeight; };
+  document.querySelectorAll(".palm-front .pl, .vaso .pl").forEach(pl => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "coco-alvo"; b.tabIndex = -1; b.setAttribute("aria-hidden", "true");
+    pl.appendChild(b);
+    let ocupado = false;
+    b.addEventListener("click", e => {
+      e.stopPropagation(); if (ocupado) return; ocupado = true; setTimeout(() => ocupado = false, 900);
+      const copa = pl.querySelector(".copa");
+      copa && copa.animate([{ rotate: "0deg" }, { rotate: "5deg" }, { rotate: "-3.5deg" }, { rotate: "1.8deg" }, { rotate: "-.6deg" }, { rotate: "0deg" }], { duration: 1100, easing: "ease-out" });
+      const r = b.getBoundingClientRect(), tr = track.getBoundingClientRect();
+      const x0 = r.left + r.width * (.4 + Math.random() * .2) - tr.left, y0 = r.top + r.height * .7;
+      const chao = piso() + innerHeight * (.02 + Math.random() * .025), dy = chao - y0;
+      const dir = Math.random() < .5 ? -1 : 1, rola = dir * (70 + Math.random() * 110), tam = Math.max(16, innerHeight * .026);
+      const c = document.createElement("div"); c.className = "coco"; c.style.cssText = `left:${x0.toFixed(0)}px;top:${y0.toFixed(0)}px;width:${tam.toFixed(0)}px;height:${tam.toFixed(0)}px`;
+      c.innerHTML = "<i></i>"; track.appendChild(c);
+      if (reduz) { c.style.transform = `translate(0,${dy}px)`; setTimeout(() => c.remove(), 2500); return; }
+      const T = 1700;
+      c.animate([
+        { transform: "translate(0,0)", offset: 0, easing: "cubic-bezier(.5,0,1,1)" },
+        { transform: `translate(${(rola * .05).toFixed(0)}px,${dy}px)`, offset: .3, easing: "cubic-bezier(0,0,.5,1)" },
+        { transform: `translate(${(rola * .22).toFixed(0)}px,${dy - tam * 1.6}px)`, offset: .44, easing: "cubic-bezier(.5,0,1,1)" },
+        { transform: `translate(${(rola * .4).toFixed(0)}px,${dy}px)`, offset: .58, easing: "cubic-bezier(0,0,.5,1)" },
+        { transform: `translate(${(rola * .5).toFixed(0)}px,${dy - tam * .45}px)`, offset: .65, easing: "cubic-bezier(.5,0,1,1)" },
+        { transform: `translate(${(rola * .6).toFixed(0)}px,${dy}px)`, offset: .72, easing: "cubic-bezier(.2,.6,.3,1)" },
+        { transform: `translate(${rola.toFixed(0)}px,${dy}px)`, offset: 1 }
+      ], { duration: T, fill: "forwards" });
+      c.firstChild.animate([{ rotate: "0deg" }, { rotate: `${(rola / (tam * .5) * 57.3 + dir * 120).toFixed(0)}deg` }], { duration: T, easing: "cubic-bezier(.3,.2,.3,1)", fill: "forwards" });
+      setTimeout(() => Som.coco(), T * .3);
+      const sorte = Math.random() < 1 / 20 || params.get("sorte") !== null;
+      setTimeout(() => {
+        if (sorte) {
+          const cx = x0 + rola, bays = [...document.querySelectorAll(".loja-baia")];
+          let alvo = bays[0], d = 1e9;
+          bays.forEach(bb => { const m = bb.offsetLeft + bb.offsetWidth / 2, dd = Math.abs(m - cx); if (dd < d) { d = dd; alvo = bb; } });
+          const l = LOJAS[idx(alvo.dataset.slug)];
+          toast(`Sorte sua! O coco rolou até a porta da ${l.nome}`, 2600);
+          setTimeout(() => abrirLoja(l.slug), 900);
+        }
+        c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 900, delay: 2200, fill: "forwards" }).onfinish = () => c.remove();
+        setTimeout(() => c.remove(), 3400);
+      }, T);
+    });
+  });
+})();
 
 /* física da caminhada: as placas penduradas balançam com a velocidade (inércia + mola amortecida)
    e o capim da frente verga para trás quando você anda. Só transform/rotate, só nas placas visíveis. */
@@ -757,7 +858,7 @@ const Tempo = (() => {
   };
   function desc(code, dia = true) {
     if (code === 0) return { t: dia ? "Céu limpo" : "Noite limpa", i: dia ? "sol" : "lua", cover: .05, rain: 0 };
-    if (code <= 2) return { t: "Sol entre nuvens", i: dia ? "parcial" : "lua", cover: .35, rain: 0 };
+    if (code <= 2) return { t: dia ? "Sol entre nuvens" : "Noite com poucas nuvens", i: dia ? "parcial" : "lua", cover: .35, rain: 0 };
     if (code === 3) return { t: "Nublado", i: "nuvem", cover: .85, rain: 0 };
     if (code <= 48) return { t: "Névoa", i: "nevoa", cover: .7, rain: 0 };
     if (code <= 57) return { t: "Garoa", i: "chuva", cover: .85, rain: .35 };
@@ -768,14 +869,57 @@ const Tempo = (() => {
   let dados = null;
   const DIAS_C = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
   async function carregar() {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&hourly=temperature_2m,weather_code,precipitation_probability,cloud_cover&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FBahia&forecast_days=5`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,is_day&hourly=temperature_2m,weather_code,precipitation_probability,cloud_cover&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset&timezone=America%2FBahia&forecast_days=5`;
     try {
       const ctl = new AbortController(); setTimeout(() => ctl.abort(), 8000);
       const r = await fetch(url, { signal: ctl.signal }); if (!r.ok) throw 0;
       dados = await r.json();
       $("#btnTempo").hidden = false;
+      carregarMare();
       aplicarHora();
     } catch (_) { /* sem previsão: o site segue normal */ }
+  }
+  /* maré (nível do mar com a maré astronômica) e ondas, pela API marinha do Open-Meteo, em frente à praia */
+  let mare = null;
+  async function carregarMare() {
+    try {
+      const ctl = new AbortController(); setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=-39.15&hourly=sea_level_height_msl,wave_height&timezone=America%2FBahia&forecast_days=2`, { signal: ctl.signal });
+      if (!r.ok) throw 0;
+      const j = await r.json(), t = j.hourly.time, z = j.hourly.sea_level_height_msl;
+      const ext = [];
+      for (let i = 1; i < z.length - 1; i++) {
+        const a = z[i - 1], b = z[i], c = z[i + 1];
+        if ((b >= a && b > c) || (b <= a && b < c)) { // pico ou vale: refina o horário com uma parábola
+          const den = a - 2 * b + c, off = den ? .5 * (a - c) / den : 0;
+          const ms = new Date(t[i] + ":00-03:00").getTime() + off * 3600e3;
+          ext.push({ alta: b > a, ms, nivel: b - .25 * (a - c) * off });
+        }
+      }
+      mare = { ext, ondas: j.hourly.wave_height, tempos: t };
+      if (!$("#tempo").hidden) painel();
+    } catch (_) { /* sem maré: o painel mostra só o pôr do sol */ }
+  }
+  const hm = ms => { const d = new Date(ms); return `${d.getHours()}h${String(d.getMinutes()).padStart(2, "0")}`; };
+  function praia() {
+    const agora = Date.now(), pd = dados.daily.sunset[0], ns = dados.daily.sunrise[1] || dados.daily.sunrise[0];
+    const porMs = new Date(pd + ":00-03:00").getTime(), nascMs = new Date(ns + ":00-03:00").getTime();
+    const linhas = [];
+    if (porMs > agora) linhas.push(`<div><span>Pôr do sol</span><strong>${hm(porMs)}</strong></div>`);
+    else linhas.push(`<div><span>Nascer do sol</span><strong>${hm(nascMs)}</strong></div>`);
+    let dicaP = "";
+    if (mare) {
+      const prox = mare.ext.filter(e => e.ms > agora).slice(0, 2);
+      prox.forEach(e => linhas.push(`<div><span>Maré ${e.alta ? "cheia" : "seca"}</span><strong>${hm(e.ms)}</strong></div>`));
+      const iA = mare.tempos.findIndex(t => new Date(t + ":00-03:00").getTime() > agora) - 1, ond = mare.ondas[Math.max(0, iA)];
+      if (ond != null) linhas.push(`<div><span>Ondas</span><strong>${ond.toFixed(1).replace(".", ",")} m</strong></div>`);
+      const seca = prox.find(e => !e.alta);
+      if (seca && seca.ms - agora < 10 * 3600e3 && new Date(seca.ms).getHours() >= 6 && new Date(seca.ms).getHours() <= 17)
+        dicaP = `Maré seca às ${hm(seca.ms)}: bom pra caminhar na areia e ver as piscinas naturais.`;
+    }
+    if (!dicaP && porMs > agora && porMs - agora < 4 * 3600e3) dicaP = `O sol se põe às ${hm(porMs)}. Pegue um açaí e chegue na areia uns 20 minutos antes.`;
+    if (!dicaP && porMs <= agora) dicaP = `O sol já se pôs: é a hora mais animada da varanda.`;
+    return `<h3>Na praia</h3><div class="tempo-praia">${linhas.join("")}</div>${dicaP ? `<p class="tempo-praia-dica">${dicaP}</p>` : ""}`;
   }
   function naHora(h) {
     if (!dados) return null;
@@ -807,6 +951,7 @@ const Tempo = (() => {
     $("#tempoAgora").innerHTML = `<div class="ta-ico">${IC[d.i]}</div><div><p class="ta-temp">${Math.round(c.temperature_2m)}°</p><p class="ta-desc">${d.t}</p>
       <p class="ta-mais">Sensação de ${Math.round(c.apparent_temperature)}° · vento ${Math.round(c.wind_speed_10m)} km/h</p></div>`;
     $("#tempoDica").innerHTML = dica(c.weather_code, c.temperature_2m, c.is_day ? 0 : 1);
+    $("#tempoPraia").innerHTML = praia();
     const agoraI = naHora(new Date().getHours()).i;
     let hs = "";
     for (let k = 1; k <= 8; k++) {
@@ -837,6 +982,7 @@ const params = new URLSearchParams(location.search);
 const porta = params.get("porta");
 const m = location.hash.match(/^#\/(.+)$/);
 if (porta && idx(porta) >= 0) {
+  portaSlug = porta;
   const b = document.getElementById("b-" + porta);
   b.insertAdjacentHTML("beforeend", `<span class="voce-aqui">Você está aqui</span>`);
   history.replaceState({}, "", location.pathname + location.search);

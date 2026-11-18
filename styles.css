@@ -522,3 +522,31 @@ body.entrando::after{opacity:1}
   .loja-baia:not(.vista) .legenda{opacity:1;transform:none}
   *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
 }
+
+/* praia: pôr do sol, maré e ondas */
+.tempo-praia{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.tempo-praia div{padding:10px 12px;border-radius:10px;background:#E3EEF2;display:grid;gap:2px}
+.tempo-praia span{font-size:13px;color:#2F6F8F;font-weight:600}
+.tempo-praia strong{font-size:20px;font-weight:700}
+.tempo-praia-dica{margin-top:10px;font-size:15px;line-height:1.4;color:#33322d}
+
+/* você está aqui (QR da porta) */
+.aqui-box{margin-top:18px;padding:14px;border-radius:12px;background:color-mix(in srgb,var(--tinta-loja) 10%,transparent);border:2px solid color-mix(in srgb,var(--tinta-loja) 28%,transparent)}
+.aqui-tit{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px}
+.aqui-pin{width:14px;height:14px;border-radius:50% 50% 50% 0;background:var(--amarelo);transform:rotate(-45deg);box-shadow:0 0 0 3px color-mix(in srgb,var(--amarelo) 35%,transparent);animation:aquiPula 1.2s var(--ease) infinite alternate}
+@keyframes aquiPula{to{transform:rotate(-45deg) translate(2px,-2px)}}
+.aqui-viz{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.aqui-viz button{text-align:left;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--tinta-loja) 12%,transparent);color:var(--tinta-loja);font-size:13px;line-height:1.25;transition:transform .2s var(--ease)}
+.aqui-viz button:last-child:not(:first-child){text-align:right}
+.aqui-viz button:hover{transform:translateY(-2px)}
+.aqui-viz strong{display:block;font-size:16px;margin-top:2px}
+.aqui-sug{margin-top:10px;font-size:15px;line-height:1.4}
+.aqui-sug button{font:inherit;font-weight:700;color:inherit;text-decoration:underline;text-underline-offset:3px;background:none;padding:0}
+
+/* coco que cai do coqueiro */
+.coco-alvo{position:absolute;left:12%;right:12%;top:2%;height:34%;z-index:3;background:none;border:0;padding:0;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.coco{position:absolute;z-index:9;pointer-events:none;will-change:transform}
+.coco i{position:absolute;inset:0;border-radius:50% 50% 47% 53% / 55% 52% 48% 45%;will-change:transform;
+  background:radial-gradient(circle at 34% 30%,#c9d97a 0,#8fae3d 28%,#5f7f22 60%,#3a5214 100%);
+  box-shadow:inset -3px -4px 6px rgba(0,0,0,.35),0 3px 4px rgba(0,0,0,.35);filter:brightness(calc(1 - var(--noite) * .35))}
+.coco i::after{content:"";position:absolute;left:44%;top:-6%;width:14%;height:16%;border-radius:40%;background:#6b5a2a}
