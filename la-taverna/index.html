@@ -18,7 +18,7 @@
 <link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/pedra-acesa-d.webp" as="image" media="(min-aspect-ratio: 4/5)">
 <link rel="preload" href="img/pedra-acesa-m.webp" as="image" media="(max-aspect-ratio: 4/5)">
-<link rel="stylesheet" href="taverna.css?v=9">
+<link rel="stylesheet" href="taverna.css?v=11">
 </head>
 <body class="carregando">
 
@@ -37,7 +37,7 @@
 </svg>
 
 <header class="topo" id="topo">
-  <a class="volta" href="../#/la-taverna" aria-label="Voltar para a varanda do Shopping Guaratiba">
+  <a class="volta" href="../?em=la-taverna" aria-label="Voltar para a varanda do Shopping Guaratiba">
     <span aria-hidden="true">←</span> <span class="volta-txt">Shopping Guaratiba</span>
   </a>
   <a class="marca-mini" href="#inicio" aria-label="La Taverna, início">
@@ -212,19 +212,75 @@
   </div>
 </section>
 
-<!-- 5. A adega -->
+<!-- 5. A vineria: escolha o estilo na estante e a taça de vinho se serve -->
 <section class="adega" id="adega" aria-labelledby="t-adega">
-  <figure class="adega-foto"><img src="img/tintos-640.webp" srcset="img/tintos-640.webp 640w, img/tintos-1200.webp 1080w" sizes="(min-width:900px) 38vw, 100vw" alt="Garrafas de vinho tinto argentino enfileiradas no balcão" loading="lazy" width="1080" height="1350"></figure>
-  <div class="adega-texto">
+  <div class="adega-cab">
     <h2 id="t-adega" class="titulo">Vineria<br><span class="script">de verdade</span></h2>
-    <p class="lead">Tintos, brancos e espumantes para escolher na garrafa ou na taça. A carta de vinhos fica no balcão, e a adega está à vista para quem prefere escolher pelo rótulo.</p>
+    <p class="lead">Tintos, brancos, rosés e espumantes, na garrafa ou na taça. Toque numa garrafa da estante e veja como cada estilo chega à mesa.</p>
+  </div>
+  <div class="adega-palco">
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <linearGradient id="gTinto" x1="0" x2="1"><stop offset="0" stop-color="#0E1A10"/><stop offset=".35" stop-color="#2C3F22"/><stop offset="1" stop-color="#0B140C"/></linearGradient>
+        <linearGradient id="gBranco" x1="0" x2="1"><stop offset="0" stop-color="#7E8B3E"/><stop offset=".35" stop-color="#C9CF7A"/><stop offset="1" stop-color="#6B7633"/></linearGradient>
+        <linearGradient id="gRose" x1="0" x2="1"><stop offset="0" stop-color="#C9707E"/><stop offset=".35" stop-color="#F4B7BC"/><stop offset="1" stop-color="#B6606E"/></linearGradient>
+        <linearGradient id="gEsp" x1="0" x2="1"><stop offset="0" stop-color="#14241A"/><stop offset=".35" stop-color="#355A3C"/><stop offset="1" stop-color="#0F1C13"/></linearGradient>
+        <linearGradient id="gFoil" x1="0" x2="1"><stop offset="0" stop-color="#9C7A2C"/><stop offset=".4" stop-color="#F2D27A"/><stop offset="1" stop-color="#8A6A22"/></linearGradient>
+      </defs>
+    </svg>
+    <div class="estante">
+      <div class="garrafas" role="radiogroup" aria-label="Estilos de vinho" id="garrafas">
+        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="tinto" aria-label="Tinto"><svg viewBox="0 0 80 260" aria-hidden="true"><path d="M18 252 L18 110 C18 92 30 86 34 76 L34 30 L46 30 L46 76 C50 86 62 92 62 110 L62 252 Z" fill="url(#gTinto)"/><rect x="33" y="18" width="14" height="40" rx="2" fill="#5B1020"/><rect x="22" y="160" width="36" height="54" rx="3" fill="#F1E5D1"/><path d="M28 176 h24 M31 186 h18" stroke="#B0532A" stroke-width="2"/><rect x="30" y="196" width="20" height="3" fill="#3B1D0E" opacity=".5"/><path d="M24 120 C24 200 24 230 24 246" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span>Tinto</span></button>
+        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="branco" aria-label="Branco"><svg viewBox="0 0 80 260" aria-hidden="true"><path d="M16 252 L16 140 C16 110 32 92 35 62 L35 26 L45 26 L45 62 C48 92 64 110 64 140 L64 252 Z" fill="url(#gBranco)"/><rect x="34" y="16" width="12" height="34" rx="2" fill="#C9A646"/><rect x="22" y="160" width="36" height="54" rx="3" fill="#F1E5D1"/><path d="M28 176 h24 M31 186 h18" stroke="#B0532A" stroke-width="2"/><rect x="30" y="196" width="20" height="3" fill="#3B1D0E" opacity=".5"/><path d="M24 120 C24 200 24 230 24 246" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span>Branco</span></button>
+        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="rose" aria-label="Rosé"><svg viewBox="0 0 80 260" aria-hidden="true"><path d="M22 252 L22 132 C22 96 34 82 36 52 L36 18 L44 18 L44 52 C46 82 58 96 58 132 L58 252 Z" fill="url(#gRose)"/><rect x="35" y="10" width="10" height="30" rx="2" fill="#B9C7D0"/><rect x="25" y="160" width="30" height="54" rx="3" fill="#F1E5D1"/><path d="M30 176 h20 M31 186 h18" stroke="#B0532A" stroke-width="2"/><rect x="30" y="196" width="20" height="3" fill="#3B1D0E" opacity=".5"/><path d="M24 120 C24 200 24 230 24 246" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span>Rosé</span></button>
+        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="espumante" aria-label="Espumante"><svg viewBox="0 0 80 260" aria-hidden="true"><path d="M14 252 L14 132 C14 102 30 88 34 66 L34 36 L46 36 L46 66 C50 88 66 102 66 132 L66 252 Z" fill="url(#gEsp)"/><path d="M31 16 L49 16 L50 78 C46 84 34 84 30 78 Z" fill="url(#gFoil)"/><rect x="22" y="160" width="36" height="54" rx="3" fill="#F1E5D1"/><path d="M28 176 h24 M31 186 h18" stroke="#B0532A" stroke-width="2"/><rect x="30" y="196" width="20" height="3" fill="#3B1D0E" opacity=".5"/><path d="M24 120 C24 200 24 230 24 246" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none" stroke-linecap="round"/></svg><span>Espumante</span></button>
+      </div>
+      <div class="prateleira" aria-hidden="true"></div>
+    </div>
+    <div class="vinho-taca">
+      <svg class="taca-vinho" viewBox="0 0 240 400" role="img" aria-label="Taça de vinho servida com o estilo escolhido">
+        <defs>
+          <clipPath id="bojoVinho"><path d="M62 40 C54 120 64 192 120 206 C176 192 186 120 178 40 Z"/></clipPath>
+          <linearGradient id="vinhoCor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8E1B2E"/><stop offset="1" stop-color="#3E0712"/></linearGradient>
+          <radialGradient id="vinhoMesa" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8E1B2E" stop-opacity=".5"/><stop offset="1" stop-color="#8E1B2E" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse cx="120" cy="352" rx="96" ry="12" fill="url(#vinhoMesa)" class="vinho-mesa"/>
+        <g clip-path="url(#bojoVinho)">
+          <g class="vinho-liq" id="vinhoLiq">
+            <path class="vinho-onda" d="M-120 0 Q-100 -6 -80 0 T-40 0 T0 0 T40 0 T80 0 T120 0 T160 0 T200 0 T240 0 T280 0 T320 0 T360 0 V240 H-120 Z" fill="url(#vinhoCor)"/>
+            <g class="vinho-bolhas" id="vinhoBolhas"></g>
+          </g>
+        </g>
+        <path d="M62 40 C54 120 64 192 120 206 C176 192 186 120 178 40" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
+        <ellipse cx="120" cy="40" rx="58" ry="8" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
+        <path d="M74 60 C70 120 78 166 104 192" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="5" stroke-linecap="round"/>
+        <path d="M116 206 L117 330 M124 206 L123 330" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
+        <path d="M118 206 L118 330" stroke="rgba(255,255,255,.18)" stroke-width="3"/>
+        <ellipse cx="120" cy="338" rx="56" ry="10" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.42)" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <div class="vinho-info" id="vinhoInfo" aria-live="polite">
+      <p class="vinho-nome" id="vinhoNome">Escolha uma garrafa</p>
+      <p class="vinho-desc" id="vinhoDesc">Cada estilo tem seu corpo, sua temperatura e sua hora certa na noite.</p>
+      <dl class="vinho-fichas">
+        <div><dt>Corpo</dt><dd><span class="corpo" id="vinhoCorpo"><i></i><i></i><i></i><i></i><i></i></span></dd></div>
+        <div><dt>Servir a</dt><dd id="vinhoTemp">–</dd></div>
+        <div><dt>Na casa</dt><dd id="vinhoCasa">–</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="adega-fotos">
+    <figure><img src="img/tintos-640.webp" srcset="img/tintos-640.webp 640w, img/tintos-1200.webp 1080w" sizes="(min-width:900px) 30vw, 50vw" alt="Garrafas de vinho tinto argentino enfileiradas no balcão" loading="lazy" width="1080" height="1350"></figure>
+    <figure><img src="img/adega-640.webp" srcset="img/adega-640.webp 640w, img/adega-1200.webp 1080w" sizes="(min-width:900px) 30vw, 50vw" alt="Adega climatizada de vidro com espumantes e vinhos brancos" loading="lazy" width="1080" height="837"></figure>
+    <figure><img src="img/brancos-640.webp" alt="Prateleira de madeira com vinhos brancos" loading="lazy" width="640" height="840"></figure>
+  </div>
+  <div class="adega-rodape">
     <p>De tempos em tempos a casa recebe degustações com sommelier na porta da loja, na própria varanda do shopping. As datas saem primeiro no Instagram.</p>
     <div class="hero-acoes">
       <a class="btn btn-ouro" href="https://drive.google.com/file/d/1rCTcxbCrMOFkF67IhUTTz9iVFM6WVZ5E/view?usp=sharing" target="_blank" rel="noopener noreferrer">Ver a carta de vinhos</a>
       <a class="btn btn-linha" href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">Próximas degustações</a>
     </div>
   </div>
-  <figure class="adega-foto2"><img src="img/brancos-640.webp" alt="Prateleira de madeira com vinhos brancos" loading="lazy" width="640" height="840"></figure>
 </section>
 
 <!-- 6. As noites -->
@@ -251,7 +307,7 @@
     </div>
     <p class="semana" id="semana" aria-label="Dias de funcionamento"></p>
   </div>
-  <a class="volta-grande" href="../#/la-taverna">
+  <a class="volta-grande" href="../?em=la-taverna">
     <svg class="emb" aria-hidden="true"><use href="#emb"/></svg>
     <span>Voltar para a varanda<br><small>e conhecer as outras 25 lojas do Shopping Guaratiba</small></span>
   </a>
@@ -264,6 +320,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=9"></script>
+<script src="taverna.js?v=10"></script>
 </body>
 </html>
