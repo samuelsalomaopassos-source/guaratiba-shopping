@@ -18,7 +18,7 @@
 <link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/pedra-acesa-d.webp" as="image" media="(min-aspect-ratio: 4/5)">
 <link rel="preload" href="img/pedra-acesa-m.webp" as="image" media="(max-aspect-ratio: 4/5)">
-<link rel="stylesheet" href="taverna.css?v=5">
+<link rel="stylesheet" href="taverna.css?v=6">
 </head>
 <body class="carregando">
 
@@ -163,28 +163,29 @@
     </svg>
     <button class="taca-seta ant" type="button" id="tacaAnt" aria-label="Brinde anterior">‹</button>
     <button class="taca-seta prox" type="button" id="tacaProx" aria-label="Próximo brinde">›</button>
-    <div class="taca-dica" id="tacaDica" aria-hidden="true"><span class="mao"></span>Deslize a taça para trocar o drink</div>
-    <p class="taca-legenda" id="tacaLegenda">A taça enche conforme a noite anda.</p>
+    <div class="taca-dica" id="tacaDica" aria-hidden="true"><span class="mao"></span>Escolha um clima e a taça enche</div>
+    <p class="taca-legenda" id="tacaLegenda">A taça está vazia. Escolha um clima abaixo.</p>
     <div class="taca-pontos" id="tacaPontos" role="tablist" aria-label="Climas da noite"></div>
   </div>
   <div class="taca-texto">
     <h2 id="t-taca" class="titulo"><span class="script">Qual é a sua</span> noite?</h2>
     <p class="lead">Escolha o clima e a taça se enche com o brinde certo. Tudo da carta de verdade, com preço.</p>
-    <div class="humores" role="radiogroup" aria-label="Clima da noite" id="humores"></div>
+    <p class="humores-tit" id="humoresTit">Toque em um clima para servir</p>
+    <div class="humores convida" role="radiogroup" aria-label="Clima da noite" id="humores"></div>
     <ul class="sugestoes" id="sugestoes" aria-live="polite"></ul>
   </div>
 </section>
 
 <!-- 3. A casa -->
-<!-- 3. A casa: as fotos passam sozinhas enquanto a pessoa rola e lê -->
-<section class="casa" id="casa" aria-labelledby="t-casa" style="--n:7">
+<!-- 3. A casa: as fotos passam sozinhas, como stories, sem prender a rolagem -->
+<section class="casa" id="casa" aria-labelledby="t-casa">
   <div class="casa-palco">
     <div class="casa-cab">
       <h2 id="t-casa" class="titulo">Madeira, pedra<br><span class="script">e luz baixa</span></h2>
       <p class="lead">Uma parede inteira de garrafas, a adega climatizada à vista e o emblema aceso na pedra. É a última porta da varanda e a que apaga a luz mais tarde.</p>
       <div class="casa-prog" aria-hidden="true"><span class="casa-num" id="casaNum">01</span><span class="casa-barras" id="casaBarras"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="casa-num">07</span></div>
     </div>
-    <div class="casa-fotos" id="casaFotos">
+    <div class="casa-fotos" id="casaFotos" role="button" tabindex="0" aria-label="Próxima foto da casa">
       <figure class="slide ativa"><img src="img/emblema-negroni-640.webp" srcset="img/emblema-negroni-640.webp 640w, img/emblema-negroni-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" decoding="async"></figure>
       <figure class="slide"><img src="img/prateleiras-640.webp" srcset="img/prateleiras-640.webp 640w, img/prateleiras-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Estantes de madeira do chão ao teto cheias de garrafas de vinho e destilados" loading="lazy" decoding="async"></figure>
       <figure class="slide"><img src="img/garrafa-gelo-640.webp" alt="Garrafa de gin sendo tirada de uma capa de gelo no balcão" loading="lazy" decoding="async"></figure>
@@ -261,6 +262,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=5"></script>
+<script src="taverna.js?v=6"></script>
 </body>
 </html>
