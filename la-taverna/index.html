@@ -18,7 +18,7 @@
 <link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/pedra-acesa-d.webp" as="image" media="(min-aspect-ratio: 4/5)">
 <link rel="preload" href="img/pedra-acesa-m.webp" as="image" media="(max-aspect-ratio: 4/5)">
-<link rel="stylesheet" href="taverna.css?v=13">
+<link rel="stylesheet" href="taverna.css?v=15">
 </head>
 <body class="carregando">
 
@@ -216,136 +216,32 @@
 <section class="adega" id="adega" aria-labelledby="t-adega">
   <div class="adega-cab">
     <h2 id="t-adega" class="titulo">Vineria<br><span class="script">de verdade</span></h2>
-    <p class="lead">Tintos, brancos, rosés e espumantes, na garrafa ou na taça. Toque numa garrafa da estante e veja como cada estilo chega à mesa.</p>
+    <p class="lead">Tintos, brancos e espumantes na garrafa ou na taça, escolhidos na adega à vista. Escolha um estilo e conheça a casa por ele.</p>
   </div>
   <div class="adega-palco">
-    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-      <defs>
-        <linearGradient id="vb-tinto" x1="0" x2="1"><stop offset="0" stop-color="#0A140C"/><stop offset=".3" stop-color="#2E4626"/><stop offset=".62" stop-color="#0A140C"/><stop offset="1" stop-color="#0A120B"/></linearGradient>
-        <linearGradient id="vf-tinto" x1="0" x2="1"><stop offset="0" stop-color="#2A050C"/><stop offset=".38" stop-color="#6E1424"/><stop offset="1" stop-color="#2A050C"/></linearGradient>
-        <linearGradient id="vb-branco" x1="0" x2="1"><stop offset="0" stop-color="#6E7A36"/><stop offset=".3" stop-color="#D6DB8C"/><stop offset=".62" stop-color="#6E7A36"/><stop offset="1" stop-color="#5E6830"/></linearGradient>
-        <linearGradient id="vf-branco" x1="0" x2="1"><stop offset="0" stop-color="#8A6A22"/><stop offset=".38" stop-color="#D9B24E"/><stop offset="1" stop-color="#8A6A22"/></linearGradient>
-        <linearGradient id="vb-rose" x1="0" x2="1"><stop offset="0" stop-color="#B85E6E"/><stop offset=".3" stop-color="#F7C2C6"/><stop offset=".62" stop-color="#B85E6E"/><stop offset="1" stop-color="#A8505F"/></linearGradient>
-        <linearGradient id="vf-rose" x1="0" x2="1"><stop offset="0" stop-color="#8C969E"/><stop offset=".38" stop-color="#D9DEE2"/><stop offset="1" stop-color="#8C969E"/></linearGradient>
-        <linearGradient id="vb-espumante" x1="0" x2="1"><stop offset="0" stop-color="#0E1D13"/><stop offset=".3" stop-color="#3A6142"/><stop offset=".62" stop-color="#0E1D13"/><stop offset="1" stop-color="#0B160F"/></linearGradient>
-        <linearGradient id="vf-espumante" x1="0" x2="1"><stop offset="0" stop-color="#8A6A22"/><stop offset=".38" stop-color="#F2D27A"/><stop offset="1" stop-color="#8A6A22"/></linearGradient>
-        <linearGradient id="vLuzLado" x1="0" x2="1"><stop offset="0" stop-color="#000" stop-opacity=".35"/><stop offset=".22" stop-color="#fff" stop-opacity=".18"/><stop offset=".34" stop-color="#fff" stop-opacity="0"/><stop offset=".85" stop-color="#000" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></linearGradient>
-        <linearGradient id="vRotulo" x1="0" x2="1"><stop offset="0" stop-color="#D9C9AE"/><stop offset=".3" stop-color="#F4EADA"/><stop offset=".75" stop-color="#EADCC5"/><stop offset="1" stop-color="#C9B697"/></linearGradient>
-      </defs>
-    </svg>
-    <!-- o nicho de pedra com a prateleira de madeira, como a parede da casa -->
-    <div class="estante">
-      <div class="nicho" aria-hidden="true"><span class="nicho-luz"></span></div>
-      <div class="garrafas" role="radiogroup" aria-label="Estilos de vinho" id="garrafas">
-        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="tinto" aria-label="Tinto"><svg viewBox="0 0 80 280" aria-hidden="true">
-          <ellipse cx="40" cy="268" rx="24" ry="4" fill="rgba(0,0,0,.55)"/>
-          <path d="M20 266 L20 118 C20 98 31 92 35 82 L35 34 L45 34 L45 82 C49 92 60 98 60 118 L60 266 Z" fill="url(#vb-tinto)"/>
-          <path d="M20 266 L20 118 C20 98 31 92 35 82 L35 34 L45 34 L45 82 C49 92 60 98 60 118 L60 266 Z" fill="url(#vLuzLado)" opacity=".9"/>
-          <rect x="33.5" y="22" width="13" height="22" rx="2" fill="url(#vf-tinto)"/>
-          
-          <g transform="translate(20.0 168)">
-            <rect width="40" height="56" rx="2" fill="url(#vRotulo)"/>
-            <rect x="2.5" y="2.5" width="35" height="51" rx="1.5" fill="none" stroke="#B0532A" stroke-width=".7" opacity=".8"/>
-            <use href="#emb" x="13.0" y="8" width="14" height="12" fill="#B0532A"/>
-            <text x="20.0" y="33" text-anchor="middle" font-family="Cinzel, serif" font-size="6.4" font-weight="600" letter-spacing=".6" fill="#3B1D0E">TINTO</text>
-            <text x="20.0" y="44" text-anchor="middle" font-family="Allura, cursive" font-size="8.5" fill="#B0532A">La Taverna</text>
-          </g>
-          <path d="M27 128 C26 190 26 230 27 258" stroke="rgba(255,255,255,.5)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          <path d="M55 140 C56 200 56 236 55 258" stroke="rgba(255,200,130,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        </svg><span>Tinto</span></button>
-        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="branco" aria-label="Branco"><svg viewBox="0 0 80 280" aria-hidden="true">
-          <ellipse cx="40" cy="268" rx="24" ry="4" fill="rgba(0,0,0,.55)"/>
-          <path d="M18 266 L18 150 C18 118 33 100 36 66 L36 30 L44 30 L44 66 C47 100 62 118 62 150 L62 266 Z" fill="url(#vb-branco)"/>
-          <path d="M18 266 L18 150 C18 118 33 100 36 66 L36 30 L44 30 L44 66 C47 100 62 118 62 150 L62 266 Z" fill="url(#vLuzLado)" opacity=".9"/>
-          <rect x="33.5" y="18" width="13" height="18" rx="2" fill="url(#vf-branco)"/>
-          
-          <g transform="translate(20.0 168)">
-            <rect width="40" height="56" rx="2" fill="url(#vRotulo)"/>
-            <rect x="2.5" y="2.5" width="35" height="51" rx="1.5" fill="none" stroke="#B0532A" stroke-width=".7" opacity=".8"/>
-            <use href="#emb" x="13.0" y="8" width="14" height="12" fill="#B0532A"/>
-            <text x="20.0" y="33" text-anchor="middle" font-family="Cinzel, serif" font-size="6.4" font-weight="600" letter-spacing=".6" fill="#3B1D0E">BRANCO</text>
-            <text x="20.0" y="44" text-anchor="middle" font-family="Allura, cursive" font-size="8.5" fill="#B0532A">La Taverna</text>
-          </g>
-          <path d="M27 128 C26 190 26 230 27 258" stroke="rgba(255,255,255,.5)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          <path d="M55 140 C56 200 56 236 55 258" stroke="rgba(255,200,130,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        </svg><span>Branco</span></button>
-        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="rose" aria-label="Rosé"><svg viewBox="0 0 80 280" aria-hidden="true">
-          <ellipse cx="40" cy="268" rx="24" ry="4" fill="rgba(0,0,0,.55)"/>
-          <path d="M23 266 L23 140 C23 102 34 86 36.5 56 L36.5 22 L43.5 22 L43.5 56 C46 86 57 102 57 140 L57 266 Z" fill="url(#vb-rose)"/>
-          <path d="M23 266 L23 140 C23 102 34 86 36.5 56 L36.5 22 L43.5 22 L43.5 56 C46 86 57 102 57 140 L57 266 Z" fill="url(#vLuzLado)" opacity=".9"/>
-          <rect x="36" y="10" width="8" height="12" rx="2" fill="url(#vf-rose)"/>
-          
-          <g transform="translate(24.0 172)">
-            <rect width="32" height="56" rx="2" fill="url(#vRotulo)"/>
-            <rect x="2.5" y="2.5" width="27" height="51" rx="1.5" fill="none" stroke="#B0532A" stroke-width=".7" opacity=".8"/>
-            <use href="#emb" x="9.0" y="8" width="14" height="12" fill="#B0532A"/>
-            <text x="16.0" y="33" text-anchor="middle" font-family="Cinzel, serif" font-size="6.4" font-weight="600" letter-spacing=".6" fill="#3B1D0E">ROSÉ</text>
-            <text x="16.0" y="44" text-anchor="middle" font-family="Allura, cursive" font-size="8.5" fill="#B0532A">La Taverna</text>
-          </g>
-          <path d="M28 128 C27 190 27 230 28 258" stroke="rgba(255,255,255,.5)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          <path d="M53 140 C54 200 54 236 53 258" stroke="rgba(255,200,130,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        </svg><span>Rosé</span></button>
-        <button class="garrafa" type="button" role="radio" aria-checked="false" data-v="espumante" aria-label="Espumante"><svg viewBox="0 0 80 280" aria-hidden="true">
-          <ellipse cx="40" cy="268" rx="24" ry="4" fill="rgba(0,0,0,.55)"/>
-          <path d="M16 266 L16 140 C16 108 31 94 35 72 L35 40 L45 40 L45 72 C49 94 64 108 64 140 L64 266 Z" fill="url(#vb-espumante)"/>
-          <path d="M16 266 L16 140 C16 108 31 94 35 72 L35 40 L45 40 L45 72 C49 94 64 108 64 140 L64 266 Z" fill="url(#vLuzLado)" opacity=".9"/>
-          <rect x="33.5" y="28" width="13" height="30" rx="2" fill="url(#vf-espumante)"/>
-          <path d="M34.5 22 h11 M34.5 26 h11 M34.5 30 h11" stroke="rgba(0,0,0,.25)" stroke-width=".8"/>
-          <g transform="translate(20.0 168)">
-            <rect width="40" height="56" rx="2" fill="url(#vRotulo)"/>
-            <rect x="2.5" y="2.5" width="35" height="51" rx="1.5" fill="none" stroke="#B0532A" stroke-width=".7" opacity=".8"/>
-            <use href="#emb" x="13.0" y="8" width="14" height="12" fill="#B0532A"/>
-            <text x="20.0" y="33" text-anchor="middle" font-family="Cinzel, serif" font-size="5.4" font-weight="600" letter-spacing=".6" fill="#3B1D0E">ESPUMANTE</text>
-            <text x="20.0" y="44" text-anchor="middle" font-family="Allura, cursive" font-size="8.5" fill="#B0532A">La Taverna</text>
-          </g>
-          <path d="M27 128 C26 190 26 230 27 258" stroke="rgba(255,255,255,.5)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-          <path d="M55 140 C56 200 56 236 55 258" stroke="rgba(255,200,130,.35)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        </svg><span>Espumante</span></button>
-      </div>
-      <div class="prateleira" aria-hidden="true"></div>
-      <p class="estante-dica" id="estanteDica">Toque numa garrafa para servir</p>
+    <figure class="adega-quadro" id="adegaQuadro">
+      <img class="ativa" data-v="tinto" src="img/vinho-tinto-700.webp" srcset="img/vinho-tinto-700.webp 700w, img/vinho-tinto.webp 1200w" sizes="(min-width:900px) 44vw, 92vw" alt="Tintos chilenos e argentinos enfileirados no balcão da La Taverna" loading="lazy" decoding="async">
+      <img data-v="branco" src="img/vinho-branco-700.webp" srcset="img/vinho-branco-700.webp 700w, img/vinho-branco.webp 1200w" sizes="(min-width:900px) 44vw, 92vw" alt="Adega climatizada da casa com brancos e espumantes" loading="lazy" decoding="async">
+      <img data-v="espumante" src="img/vinho-espumante-700.webp" srcset="img/vinho-espumante-700.webp 700w, img/vinho-espumante.webp 1200w" sizes="(min-width:900px) 44vw, 92vw" alt="Espumante sendo servido sobre sorvete de limão no balcão de madeira" loading="lazy" decoding="async">
+      <figcaption id="adegaLegenda">Na casa: Malbec, Syrah e Cabernet</figcaption>
+    </figure>
+    <div class="estilos" role="tablist" aria-label="Estilos de vinho" id="estilos">
+      <button class="estilo" role="tab" aria-selected="true" data-v="tinto">
+        <span class="est-num">01</span><span class="est-nome">Tinto</span><span class="est-cor" style="--c:#8E1B2E"></span>
+        <span class="est-corpo"><span class="est-corpo-in"><span class="est-desc">Encorpado e macio, para noite longa e conversa sem pressa. É o que pede uma mesa reunida.</span>
+          <span class="est-fichas"><span><small>Corpo</small><b class="barra" style="--n:4"></b></span><span><small>Servir a</small><b>16 a 18 °C</b></span><span><small>Na casa</small><b>Malbec, Syrah e Cabernet</b></span></span></span></span>
+      </button>
+      <button class="estilo" role="tab" aria-selected="false" data-v="branco">
+        <span class="est-num">02</span><span class="est-nome">Branco</span><span class="est-cor" style="--c:#E3C766"></span>
+        <span class="est-corpo"><span class="est-corpo-in"><span class="est-desc">Fresco e leve, feito para o calor da Bahia e para o começo da noite.</span>
+          <span class="est-fichas"><span><small>Corpo</small><b class="barra" style="--n:2"></b></span><span><small>Servir a</small><b>8 a 10 °C</b></span><span><small>Na casa</small><b>Na adega climatizada</b></span></span></span></span>
+      </button>
+      <button class="estilo" role="tab" aria-selected="false" data-v="espumante">
+        <span class="est-num">03</span><span class="est-nome">Espumante</span><span class="est-cor" style="--c:#F0DC98"></span>
+        <span class="est-corpo"><span class="est-corpo-in"><span class="est-desc">Borbulha para abrir a noite ou brindar alguma coisa. Ninguém precisa de motivo.</span>
+          <span class="est-fichas"><span><small>Corpo</small><b class="barra" style="--n:1"></b></span><span><small>Servir a</small><b>6 a 8 °C</b></span><span><small>Na casa</small><b>Também no drink La Taverna</b></span></span></span></span>
+      </button>
     </div>
-    <div class="vinho-taca">
-      <svg class="taca-vinho" viewBox="0 0 240 400" role="img" aria-label="Taça de vinho servida com o estilo escolhido">
-        <defs>
-          <clipPath id="bojoVinho"><path d="M62 40 C54 120 64 192 120 206 C176 192 186 120 178 40 Z"/></clipPath>
-          <linearGradient id="vinhoCor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8E1B2E"/><stop offset="1" stop-color="#3E0712"/></linearGradient>
-          <radialGradient id="vinhoMesa" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8E1B2E" stop-opacity=".5"/><stop offset="1" stop-color="#8E1B2E" stop-opacity="0"/></radialGradient>
-        </defs>
-        <ellipse cx="120" cy="352" rx="96" ry="12" fill="url(#vinhoMesa)" class="vinho-mesa"/>
-        <path id="vinhoFio" class="vinho-fio" d="M150 -60 C140 0 128 60 122 130" fill="none" stroke="url(#vinhoCor)" stroke-width="7" stroke-linecap="round"/>
-        <g clip-path="url(#bojoVinho)">
-          <g class="vinho-liq" id="vinhoLiq">
-            <path class="vinho-onda" d="M-120 0 Q-100 -6 -80 0 T-40 0 T0 0 T40 0 T80 0 T120 0 T160 0 T200 0 T240 0 T280 0 T320 0 T360 0 V240 H-120 Z" fill="url(#vinhoCor)"/>
-            <g class="vinho-bolhas" id="vinhoBolhas"></g>
-          </g>
-        </g>
-        <g class="lagrimas" id="lagrimas" clip-path="url(#bojoVinho)" fill="none" stroke-width="2.2" stroke-linecap="round">
-          <path d="M80 70 C79 85 80 98 81 112"/><path d="M96 58 C95 76 96 92 97 110"/><path d="M146 60 C147 78 146 94 145 112"/><path d="M162 72 C163 86 162 98 161 112"/>
-        </g>
-        <path d="M62 40 C54 120 64 192 120 206 C176 192 186 120 178 40" fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-        <path d="M172 60 C176 110 168 160 140 194" fill="none" stroke="rgba(255,200,130,.3)" stroke-width="2.5" stroke-linecap="round"/>
-        <ellipse cx="120" cy="40" rx="58" ry="8" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
-        <path d="M74 60 C70 120 78 166 104 192" fill="none" stroke="rgba(255,255,255,.32)" stroke-width="5" stroke-linecap="round"/>
-        <path d="M116 206 L117 330 M124 206 L123 330" stroke="rgba(255,255,255,.4)" stroke-width="2.5"/>
-        <path d="M118 206 L118 330" stroke="rgba(255,255,255,.18)" stroke-width="3"/>
-        <ellipse cx="120" cy="338" rx="56" ry="10" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.42)" stroke-width="2.5"/>
-      </svg>
-    </div>
-    <div class="vinho-info" id="vinhoInfo" aria-live="polite">
-      <p class="vinho-nome" id="vinhoNome">Escolha uma garrafa</p>
-      <p class="vinho-desc" id="vinhoDesc">Cada estilo tem seu corpo, sua temperatura e sua hora certa na noite.</p>
-      <dl class="vinho-fichas">
-        <div><dt>Corpo</dt><dd><span class="corpo" id="vinhoCorpo"><i></i><i></i><i></i><i></i><i></i></span></dd></div>
-        <div><dt>Servir a</dt><dd id="vinhoTemp">–</dd></div>
-        <div><dt>Na casa</dt><dd id="vinhoCasa">–</dd></div>
-      </dl>
-    </div>
-  </div>
-  <div class="adega-fotos">
-    <figure><img src="img/tintos-640.webp" srcset="img/tintos-640.webp 640w, img/tintos-1200.webp 1080w" sizes="(min-width:900px) 30vw, 50vw" alt="Garrafas de vinho tinto argentino enfileiradas no balcão" loading="lazy" width="1080" height="1350"></figure>
-    <figure><img src="img/adega-640.webp" srcset="img/adega-640.webp 640w, img/adega-1200.webp 1080w" sizes="(min-width:900px) 30vw, 50vw" alt="Adega climatizada de vidro com espumantes e vinhos brancos" loading="lazy" width="1080" height="837"></figure>
-    <figure><img src="img/brancos-640.webp" alt="Prateleira de madeira com vinhos brancos" loading="lazy" width="640" height="840"></figure>
   </div>
   <div class="adega-rodape">
     <p>De tempos em tempos a casa recebe degustações com sommelier na porta da loja, na própria varanda do shopping. As datas saem primeiro no Instagram.</p>
@@ -393,6 +289,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=12"></script>
+<script src="taverna.js?v=14"></script>
 </body>
 </html>
