@@ -18,7 +18,7 @@
 <link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/pedra-acesa-d.webp" as="image" media="(min-aspect-ratio: 4/5)">
 <link rel="preload" href="img/pedra-acesa-m.webp" as="image" media="(max-aspect-ratio: 4/5)">
-<link rel="stylesheet" href="taverna.css?v=4">
+<link rel="stylesheet" href="taverna.css?v=5">
 </head>
 <body class="carregando">
 
@@ -161,7 +161,11 @@
       </g>
       <g fill="rgba(255,226,190,.5)"><circle cx="100" cy="66" r="3"/><circle cx="500" cy="66" r="3"/></g>
     </svg>
+    <button class="taca-seta ant" type="button" id="tacaAnt" aria-label="Brinde anterior">‹</button>
+    <button class="taca-seta prox" type="button" id="tacaProx" aria-label="Próximo brinde">›</button>
+    <div class="taca-dica" id="tacaDica" aria-hidden="true"><span class="mao"></span>Deslize a taça para trocar o drink</div>
     <p class="taca-legenda" id="tacaLegenda">A taça enche conforme a noite anda.</p>
+    <div class="taca-pontos" id="tacaPontos" role="tablist" aria-label="Climas da noite"></div>
   </div>
   <div class="taca-texto">
     <h2 id="t-taca" class="titulo"><span class="script">Qual é a sua</span> noite?</h2>
@@ -172,19 +176,23 @@
 </section>
 
 <!-- 3. A casa -->
-<section class="casa" aria-labelledby="t-casa">
-  <div class="casa-cab">
-    <h2 id="t-casa" class="titulo">Madeira, pedra<br><span class="script">e luz baixa</span></h2>
-    <p class="lead">Uma parede inteira de garrafas, a adega climatizada à vista e o emblema aceso na pedra. É a última porta da varanda e a que apaga a luz mais tarde.</p>
-  </div>
-  <div class="trilho" id="trilho" tabindex="0" aria-label="Fotos da casa, role para o lado">
-    <figure class="foto f-arco"><img src="img/emblema-negroni-640.webp" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" loading="lazy" width="640" height="800"></figure>
-    <figure class="foto f-alta"><img src="img/prateleiras-640.webp" srcset="img/prateleiras-640.webp 640w, img/prateleiras-1200.webp 1080w" sizes="(min-width:900px) 40vw, 80vw" alt="Estantes de madeira do chão ao teto cheias de garrafas de vinho e destilados" loading="lazy" width="1080" height="864"></figure>
-    <figure class="foto f-arco"><img src="img/garrafa-gelo-640.webp" alt="Garrafa de gin sendo tirada de uma capa de gelo no balcão" loading="lazy" width="640" height="1023"></figure>
-    <figure class="foto f-alta"><img src="img/adega-640.webp" srcset="img/adega-640.webp 640w, img/adega-1200.webp 1080w" sizes="(min-width:900px) 40vw, 80vw" alt="Adega climatizada de vidro com espumantes e vinhos brancos" loading="lazy" width="1080" height="837"></figure>
-    <figure class="foto f-arco"><img src="img/sour-640.webp" alt="Drink amarelo com espuma e anis estrelado sobre o balcão, emblema aceso ao fundo" loading="lazy" width="640" height="800"></figure>
-    <figure class="foto f-alta"><img src="img/espumante-640.webp" srcset="img/espumante-640.webp 640w, img/espumante-1200.webp 1080w" sizes="(min-width:900px) 40vw, 80vw" alt="Espumante sendo servido num copo sobre o balcão de madeira" loading="lazy" width="1080" height="783"></figure>
-    <figure class="foto f-arco"><img src="img/fachada-640.webp" alt="Taça de drink vermelho erguida em frente à fachada preta da La Taverna à noite" loading="lazy" width="640" height="800"></figure>
+<!-- 3. A casa: as fotos passam sozinhas enquanto a pessoa rola e lê -->
+<section class="casa" id="casa" aria-labelledby="t-casa" style="--n:7">
+  <div class="casa-palco">
+    <div class="casa-cab">
+      <h2 id="t-casa" class="titulo">Madeira, pedra<br><span class="script">e luz baixa</span></h2>
+      <p class="lead">Uma parede inteira de garrafas, a adega climatizada à vista e o emblema aceso na pedra. É a última porta da varanda e a que apaga a luz mais tarde.</p>
+      <div class="casa-prog" aria-hidden="true"><span class="casa-num" id="casaNum">01</span><span class="casa-barras" id="casaBarras"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="casa-num">07</span></div>
+    </div>
+    <div class="casa-fotos" id="casaFotos">
+      <figure class="slide ativa"><img src="img/emblema-negroni-640.webp" srcset="img/emblema-negroni-640.webp 640w, img/emblema-negroni-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" decoding="async"></figure>
+      <figure class="slide"><img src="img/prateleiras-640.webp" srcset="img/prateleiras-640.webp 640w, img/prateleiras-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Estantes de madeira do chão ao teto cheias de garrafas de vinho e destilados" loading="lazy" decoding="async"></figure>
+      <figure class="slide"><img src="img/garrafa-gelo-640.webp" alt="Garrafa de gin sendo tirada de uma capa de gelo no balcão" loading="lazy" decoding="async"></figure>
+      <figure class="slide"><img src="img/adega-640.webp" srcset="img/adega-640.webp 640w, img/adega-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Adega climatizada de vidro com espumantes e vinhos brancos" loading="lazy" decoding="async"></figure>
+      <figure class="slide"><img src="img/sour-640.webp" alt="Drink amarelo com espuma e anis estrelado sobre o balcão, emblema aceso ao fundo" loading="lazy" decoding="async"></figure>
+      <figure class="slide"><img src="img/espumante-640.webp" srcset="img/espumante-640.webp 640w, img/espumante-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Espumante sendo servido num copo sobre o balcão de madeira" loading="lazy" decoding="async"></figure>
+      <figure class="slide"><img src="img/fachada-640.webp" alt="Taça de drink vermelho erguida em frente à fachada preta da La Taverna à noite" loading="lazy" decoding="async"></figure>
+    </div>
   </div>
 </section>
 
@@ -253,6 +261,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=4"></script>
+<script src="taverna.js?v=5"></script>
 </body>
 </html>
