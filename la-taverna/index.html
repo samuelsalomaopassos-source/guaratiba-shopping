@@ -18,7 +18,7 @@
 <link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="img/pedra-acesa-d.webp" as="image" media="(min-aspect-ratio: 4/5)">
 <link rel="preload" href="img/pedra-acesa-m.webp" as="image" media="(max-aspect-ratio: 4/5)">
-<link rel="stylesheet" href="taverna.css?v=6">
+<link rel="stylesheet" href="taverna.css?v=7">
 </head>
 <body class="carregando">
 
@@ -185,7 +185,9 @@
       <p class="lead">Uma parede inteira de garrafas, a adega climatizada à vista e o emblema aceso na pedra. É a última porta da varanda e a que apaga a luz mais tarde.</p>
       <div class="casa-prog" aria-hidden="true"><span class="casa-num" id="casaNum">01</span><span class="casa-barras" id="casaBarras"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="casa-num">07</span></div>
     </div>
-    <div class="casa-fotos" id="casaFotos" role="button" tabindex="0" aria-label="Próxima foto da casa">
+    <div class="casa-fotos" id="casaFotos" tabindex="0" aria-label="Fotos da casa: deslize ou use as setas">
+      <button class="foto-seta ant" type="button" id="fotoAnt" aria-label="Foto anterior">‹</button>
+      <button class="foto-seta prox" type="button" id="fotoProx" aria-label="Próxima foto">›</button>
       <figure class="slide ativa"><img src="img/emblema-negroni-640.webp" srcset="img/emblema-negroni-640.webp 640w, img/emblema-negroni-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" decoding="async"></figure>
       <figure class="slide"><img src="img/prateleiras-640.webp" srcset="img/prateleiras-640.webp 640w, img/prateleiras-1200.webp 1080w" sizes="(min-width:900px) 46vw, 90vw" alt="Estantes de madeira do chão ao teto cheias de garrafas de vinho e destilados" loading="lazy" decoding="async"></figure>
       <figure class="slide"><img src="img/garrafa-gelo-640.webp" alt="Garrafa de gin sendo tirada de uma capa de gelo no balcão" loading="lazy" decoding="async"></figure>
@@ -262,6 +264,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=6"></script>
+<script src="taverna.js?v=7"></script>
 </body>
 </html>
