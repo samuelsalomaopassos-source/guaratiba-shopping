@@ -1,12 +1,4 @@
-/* Céu em WebGL: gradiente atmosférico pela altura do sol, halo, nuvens volumétricas (fbm),
-   estrelas e lua. Fallback: cor CSS do .sky. */
-window.Ceu = (() => {
-  const cv = document.getElementById("ceu");
-  const gl = cv && (cv.getContext("webgl", { antialias: false, alpha: false, premultipliedAlpha: false }) || cv.getContext("experimental-webgl"));
-  if (!gl) return { set() {}, ok: false };
-
-  const vs = `attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
-  const fs = `
+window.Ceu=(()=>{const i=document.getElementById("ceu"),e=i&&(i.getContext("webgl",{antialias:!1,alpha:!1,premultipliedAlpha:!1})||i.getContext("experimental-webgl"));if(!e)return{set(){},ok:!1};const p="attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}",x=`
 precision highp float;
 uniform vec2 uRes; uniform float uTime; uniform vec2 uSun; uniform float uElev; uniform float uNight;
 uniform vec2 uMoon; uniform float uMoonVis; uniform float uScroll; uniform float uHorizon; uniform float uCover; uniform float uRain;
@@ -21,7 +13,7 @@ void main(){
   // altura relativa ao horizonte (linha do telhado)
   float y=clamp((uv.y-uHorizon)/(1.-uHorizon),0.,1.);
   float e=uElev; // -1 noite funda .. 1 meio-dia
-  // cores do zênite e do horizonte por fase do dia
+  // cores do z\xEAnite e do horizonte por fase do dia
   vec3 zDay=vec3(.16,.42,.78), hDay=vec3(.62,.80,.93);
   vec3 zGold=vec3(.28,.42,.66), hGold=vec3(.98,.70,.42);
   vec3 zSet=vec3(.13,.16,.36), hSet=vec3(.95,.42,.26);
@@ -35,7 +27,7 @@ void main(){
   float sunVis=smoothstep(-.12,.05,e);
   vec3 sunCol=mix(vec3(1.,.55,.25),vec3(1.,.93,.78),smoothstep(0.,.5,e));
   col+=sunCol*(.55*exp(-d*3.2)+.35*exp(-d*12.)+.9*exp(-d*38.))*sunVis;
-  // avermelhado do horizonte na direção do sol
+  // avermelhado do horizonte na dire\xE7\xE3o do sol
   col+=vec3(1.,.45,.2)*exp(-abs(uv.x-uSun.x)*2.2)*(1.-y)*.35*(tSet-tDay*.8)*sunVis;
   // estrelas
   float st=0.; vec2 g=floor(q*180.); float r=h(g);
@@ -65,44 +57,7 @@ void main(){
   col=mix(col,mix(col,vec3(dot(col,vec3(.3,.59,.11))),uCover*.5)*(1.-uRain*.35),1.);
   col=mix(col,cc,cover*.92);
   col=mix(col,cc,wisp*(1.-cover));
-  // grão fino para não ter banding
+  // gr\xE3o fino para n\xE3o ter banding
   col+=(h(gl_FragCoord.xy+uTime)-.5)/255.;
   gl_FragColor=vec4(col,1.);
-}`;
-  function sh(t, s) { const o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(o); return o; }
-  let prog;
-  try {
-    prog = gl.createProgram();
-    gl.attachShader(prog, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, fs));
-    gl.linkProgram(prog); gl.useProgram(prog);
-  } catch (e) { console.warn("céu sem WebGL", e); return { set() {}, ok: false }; }
-  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-  const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; ["uRes", "uTime", "uSun", "uElev", "uNight", "uMoon", "uMoonVis", "uScroll", "uHorizon", "uCover", "uRain"].forEach(k => U[k] = gl.getUniformLocation(prog, k));
-  const st = { sun: [.5, .7], elev: .8, night: 0, moon: [.5, .7], moonVis: 0, scroll: 0, horizon: .6, cover: .25, rain: 0 };
-  let escala = matchMedia("(max-width:700px)").matches ? .3 : .32, intervalo = 66;
-  function tam() {
-    const w = Math.round(innerWidth * escala), h = Math.round(innerHeight * escala);
-    if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; gl.viewport(0, 0, w, h); }
-  }
-  addEventListener("resize", tam); tam();
-  const reduz = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let last = 0, t0 = performance.now(), parado = false;
-  function frame(now) {
-    requestAnimationFrame(frame);
-    if (parado || document.hidden) return;
-    if (now - last < intervalo) return; last = now; // ~15 fps: as nuvens andam devagar
-    const t = reduz ? 0 : (now - t0) / 1000;
-    gl.uniform2f(U.uRes, cv.width, cv.height); gl.uniform1f(U.uTime, t);
-    gl.uniform2f(U.uSun, st.sun[0], st.sun[1]); gl.uniform1f(U.uElev, st.elev); gl.uniform1f(U.uNight, st.night);
-    gl.uniform2f(U.uMoon, st.moon[0], st.moon[1]); gl.uniform1f(U.uMoonVis, st.moonVis);
-    gl.uniform1f(U.uScroll, st.scroll); gl.uniform1f(U.uHorizon, st.horizon);
-    gl.uniform1f(U.uCover, st.cover); gl.uniform1f(U.uRain, st.rain);
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
-  requestAnimationFrame(frame);
-  document.documentElement.classList.add("ceu-gl");
-  return { ok: true, set(o) { Object.assign(st, o); }, pausa(v) { parado = v; },
-    leve() { escala = .22; intervalo = 110; tam(); } };
-})();
+}`;function l(o,r){const n=e.createShader(o);if(e.shaderSource(n,r),e.compileShader(n),!e.getShaderParameter(n,e.COMPILE_STATUS))throw e.getShaderInfoLog(n);return n}let a;try{a=e.createProgram(),e.attachShader(a,l(e.VERTEX_SHADER,p)),e.attachShader(a,l(e.FRAGMENT_SHADER,x)),e.linkProgram(a),e.useProgram(a)}catch(o){return console.warn("c\xE9u sem WebGL",o),{set(){},ok:!1}}const g=e.createBuffer();e.bindBuffer(e.ARRAY_BUFFER,g),e.bufferData(e.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),e.STATIC_DRAW);const m=e.getAttribLocation(a,"p");e.enableVertexAttribArray(m),e.vertexAttribPointer(m,2,e.FLOAT,!1,0,0);const t={};["uRes","uTime","uSun","uElev","uNight","uMoon","uMoonVis","uScroll","uHorizon","uCover","uRain"].forEach(o=>t[o]=e.getUniformLocation(a,o));const c={sun:[.5,.7],elev:.8,night:0,moon:[.5,.7],moonVis:0,scroll:0,horizon:.6,cover:.25,rain:0};let u=matchMedia("(max-width:700px)").matches?.3:.32,f=66;function s(){const o=Math.round(innerWidth*u),r=Math.round(innerHeight*u);(i.width!==o||i.height!==r)&&(i.width=o,i.height=r,e.viewport(0,0,o,r))}addEventListener("resize",s),s();const y=matchMedia("(prefers-reduced-motion: reduce)").matches;let v=0,S=performance.now(),h=!1;function d(o){if(requestAnimationFrame(d),h||document.hidden||o-v<f)return;v=o;const r=y?0:(o-S)/1e3;e.uniform2f(t.uRes,i.width,i.height),e.uniform1f(t.uTime,r),e.uniform2f(t.uSun,c.sun[0],c.sun[1]),e.uniform1f(t.uElev,c.elev),e.uniform1f(t.uNight,c.night),e.uniform2f(t.uMoon,c.moon[0],c.moon[1]),e.uniform1f(t.uMoonVis,c.moonVis),e.uniform1f(t.uScroll,c.scroll),e.uniform1f(t.uHorizon,c.horizon),e.uniform1f(t.uCover,c.cover),e.uniform1f(t.uRain,c.rain),e.drawArrays(e.TRIANGLES,0,3)}return requestAnimationFrame(d),document.documentElement.classList.add("ceu-gl"),{ok:!0,set(o){Object.assign(c,o)},pausa(o){h=o},leve(){u=.22,f=110,s()}}})();
