@@ -15,9 +15,10 @@
 <link rel="icon" href="img/emblema.svg" type="image/svg+xml">
 <link rel="preload" href="fonts/cormorant-garamond-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/lora-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="img/emblema-negroni-1200.webp" as="image" media="(min-width: 700px)">
-<link rel="preload" href="img/emblema-negroni-640.webp" as="image" media="(max-width: 699px)">
-<link rel="stylesheet" href="taverna.css?v=1">
+<link rel="preload" href="fonts/cinzel-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="img/pedra-escura.webp" as="image">
+<link rel="preload" href="img/pedra-acesa.webp" as="image">
+<link rel="stylesheet" href="taverna.css?v=3">
 </head>
 <body class="carregando">
 
@@ -52,51 +53,113 @@
 
 <main>
 
-<!-- 1. A porta -->
+<!-- 1. A porta: a parede de pedra acende e o letreiro aparece, como na fachada da loja 13 -->
 <section class="hero" id="inicio" aria-labelledby="t-hero">
-  <div class="hero-luz" aria-hidden="true"></div>
-  <div class="hero-texto">
-    <p class="status" id="status" aria-live="polite"><span class="ponto"></span><span id="statusTxt">Quinta a sábado, das 19h às 23h</span></p>
+  <div class="parede" aria-hidden="true">
+    <div class="pedra"></div>
+    <div class="luz" id="luz"><div class="luz-pedra"></div></div>
+    <div class="lanterna" id="lanterna"></div>
+    <div class="halo"></div>
+    <div class="poeira" id="poeira"></div>
+  </div>
+  <div class="letreiro">
+    <svg class="placa-emb" viewBox="0 0 537 445" aria-hidden="true"><use href="#emb"/></svg>
     <h1 id="t-hero" class="wordmark">
       <span class="wm-la">La</span>
-      <span class="wm-taverna">TAVERNA</span>
-      <span class="wm-sub">Vineria · Drinkeria · Choperia</span>
+      <span class="wm-taverna" aria-label="Taverna"><span>T</span><span>A</span><span>V</span><span>E</span><span>R</span><span>N</span><span>A</span></span>
+      <span class="wm-sub">Vineria, Drinkeria e Choperia</span>
     </h1>
+  </div>
+  <div class="hero-base">
     <p class="hero-frase">O brinde perfeito a momentos inesquecíveis.</p>
-    <p class="hero-apoio">Drinks autorais, vinhos e chope gelado na loja 13 do Shopping Guaratiba, a poucos passos da praia.</p>
+    <p class="status" id="status" aria-live="polite"><span class="ponto"></span><span id="statusTxt">Quinta a sábado, das 19h às 23h</span></p>
     <div class="hero-acoes">
       <a class="btn btn-ouro" href="#carta">Ver a carta</a>
-      <a class="btn btn-linha" href="#visite">Como chegar</a>
+      <a class="btn btn-linha" href="#taca">Escolher meu brinde</a>
     </div>
   </div>
-  <figure class="hero-arco">
-    <picture>
-      <source media="(min-width: 700px)" srcset="img/emblema-negroni-1200.webp">
-      <img src="img/emblema-negroni-640.webp" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" width="1080" height="1350" fetchpriority="high">
-    </picture>
-  </figure>
   <a class="rolar" href="#taca" aria-label="Descer para a próxima seção"><span></span></a>
 </section>
 
 <!-- 2. A taça da noite: a peça viva -->
 <section class="taca" id="taca" aria-labelledby="t-taca">
   <div class="taca-visual" aria-hidden="true">
-    <svg class="taca-svg" viewBox="0 0 537 445">
+    <svg class="taca-svg" viewBox="0 0 600 640" role="img" aria-label="A taça da La Taverna, desenhada a partir do emblema da casa">
       <defs>
-        <clipPath id="dentro"><path d="M117 40 L117 129 C117 255 190 338 268 338 C350 338 420 255 420 130 L420 40 Z"/></clipPath>
+        <!-- bojo da taça: o "U" do emblema em perspectiva -->
+        <clipPath id="bojo"><path d="M125 150 C125 330 205 455 300 455 C395 455 475 330 475 150 A175 32 0 0 0 125 150 Z"/></clipPath>
         <linearGradient id="liq" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="var(--liq-a, #E9A64A)"/>
-          <stop offset="1" stop-color="var(--liq-b, #9C3A1E)"/>
+          <stop offset="0" stop-color="#E9A64A"/>
+          <stop offset="1" stop-color="#9C3A1E"/>
         </linearGradient>
+        <linearGradient id="liqLado" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset=".3" stop-color="#000" stop-opacity="0"/>
+          <stop offset=".72" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity=".5"/>
+        </linearGradient>
+        <linearGradient id="vidro" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".22" stop-color="#fff" stop-opacity=".03"/>
+          <stop offset=".8" stop-color="#fff" stop-opacity=".02"/><stop offset="1" stop-color="#fff" stop-opacity=".14"/>
+        </linearGradient>
+        <linearGradient id="cobre" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#F0A574"/><stop offset=".35" stop-color="#C0612F"/><stop offset=".7" stop-color="#8A3A17"/><stop offset="1" stop-color="#D9824C"/>
+        </linearGradient>
+        <linearGradient id="cobreV" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#E89566"/><stop offset=".5" stop-color="#B0532A"/><stop offset="1" stop-color="#6E2C10"/>
+        </linearGradient>
+        <radialGradient id="reflexoMesa" cx=".5" cy=".5" r=".5">
+          <stop offset="0" stop-color="#E9A64A" stop-opacity=".55" class="mesa-a"/><stop offset="1" stop-color="#E9A64A" stop-opacity="0" class="mesa-b"/>
+        </radialGradient>
+        <clipPath id="sup"><ellipse id="supClip" cx="300" cy="0" rx="170" ry="30"/></clipPath>
       </defs>
-      <g clip-path="url(#dentro)">
-        <g class="liquido" id="liquido">
-          <path class="onda o1" d="M-200 0 Q-150 -14 -100 0 T0 0 T100 0 T200 0 T300 0 T400 0 T500 0 T600 0 T700 0 T800 0 V600 H-200 Z" fill="url(#liq)"/>
-          <path class="onda o2" d="M-200 6 Q-150 -6 -100 6 T0 6 T100 6 T200 6 T300 6 T400 6 T500 6 T600 6 T700 6 T800 6 V600 H-200 Z" fill="url(#liq)" opacity=".55"/>
-        </g>
-        <g class="bolhas" id="bolhas"></g>
+
+      <!-- sombra e luz colorida do drink na mesa -->
+      <ellipse cx="300" cy="590" rx="190" ry="26" fill="rgba(0,0,0,.55)"/>
+      <ellipse class="mesa" cx="300" cy="586" rx="150" ry="20" fill="url(#reflexoMesa)"/>
+
+      <!-- pés: os dois caracóis do emblema viram a base da taça -->
+      <g fill="none" stroke="url(#cobreV)" stroke-width="15" stroke-linecap="round">
+        <path d="M290 452 C288 500 286 540 262 556 C238 572 212 560 214 538 C216 520 236 516 244 528"/>
+        <path d="M310 452 C312 500 314 540 338 556 C362 572 388 560 386 538 C384 520 364 516 356 528"/>
       </g>
-      <use href="#emb" class="taca-contorno"/>
+      <ellipse cx="300" cy="470" rx="22" ry="9" fill="url(#cobre)"/>
+
+      <!-- parede de trás do vidro -->
+      <path d="M125 150 A175 32 0 0 1 475 150" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/>
+
+      <!-- o drink -->
+      <g clip-path="url(#bojo)">
+        <g id="liquido" class="liquido">
+          <rect x="100" y="0" width="400" height="520" fill="url(#liq)"/>
+          <rect x="100" y="0" width="400" height="520" fill="url(#liqLado)"/>
+          <g class="bolhas" id="bolhas"></g>
+          <!-- superfície: as três ondas do emblema -->
+          <ellipse id="sup" cx="300" cy="0" rx="170" ry="30" fill="url(#liq)"/>
+          <ellipse id="supLuz" cx="300" cy="0" rx="170" ry="30" fill="rgba(255,240,210,.16)"/>
+          <g clip-path="url(#sup)" fill="none" stroke="rgba(255,244,220,.55)" stroke-width="7" stroke-linecap="round">
+            <g class="ondas">
+              <path d="M40 -16 q25 -9 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0"/>
+              <path d="M40 0 q25 -9 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0"/>
+              <path d="M40 16 q25 -9 50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0 t50 0"/>
+            </g>
+          </g>
+        </g>
+      </g>
+
+      <!-- o vidro: corpo, reflexos e borda -->
+      <path d="M125 150 C125 330 205 455 300 455 C395 455 475 330 475 150" fill="url(#vidro)" stroke="rgba(255,255,255,.32)" stroke-width="3"/>
+      <path d="M232 446 C262 462 338 462 368 446 C350 458 330 463 300 463 C270 463 250 458 232 446 Z" fill="rgba(255,255,255,.22)"/>
+      <path d="M152 178 C150 300 192 398 246 432" fill="none" stroke="rgba(255,255,255,.34)" stroke-width="9" stroke-linecap="round"/>
+      <path d="M162 196 C163 250 172 290 186 322" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M448 190 C446 290 410 380 362 425" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- aro e alças de cobre: as volutas de cima do emblema -->
+      <path d="M125 150 A175 32 0 0 0 475 150" fill="none" stroke="url(#cobre)" stroke-width="10"/>
+      <path d="M125 150 A175 32 0 0 1 475 150" fill="none" stroke="url(#cobre)" stroke-width="5" opacity=".75"/>
+      <g fill="none" stroke="url(#cobre)" stroke-width="16" stroke-linecap="round">
+        <path d="M126 152 C124 112 118 82 96 68 C72 53 44 64 44 92"/>
+        <path d="M474 152 C476 112 482 82 504 68 C528 53 556 64 556 92"/>
+      </g>
+      <g fill="rgba(255,226,190,.5)"><circle cx="100" cy="66" r="3"/><circle cx="500" cy="66" r="3"/></g>
     </svg>
     <p class="taca-legenda" id="tacaLegenda">A taça enche conforme a noite anda.</p>
   </div>
@@ -115,6 +178,7 @@
     <p class="lead">Uma parede inteira de garrafas, a adega climatizada à vista e o emblema aceso na pedra. É a última porta da varanda e a que apaga a luz mais tarde.</p>
   </div>
   <div class="trilho" id="trilho" tabindex="0" aria-label="Fotos da casa, role para o lado">
+    <figure class="foto f-arco"><img src="img/emblema-negroni-640.webp" alt="Taça de drink vermelho erguida diante do emblema da La Taverna, iluminado na parede de pedra" loading="lazy" width="640" height="800"><figcaption>O emblema aceso na pedra</figcaption></figure>
     <figure class="foto f-alta"><img src="img/prateleiras-640.webp" srcset="img/prateleiras-640.webp 640w, img/prateleiras-1200.webp 1080w" sizes="(min-width:900px) 40vw, 80vw" alt="Estantes de madeira do chão ao teto cheias de garrafas de vinho e destilados" loading="lazy" width="1080" height="864"><figcaption>A parede de garrafas</figcaption></figure>
     <figure class="foto f-arco"><img src="img/garrafa-gelo-640.webp" alt="Garrafa de gin sendo tirada de uma capa de gelo no balcão" loading="lazy" width="640" height="1023"><figcaption>O gin sai do gelo</figcaption></figure>
     <figure class="foto f-alta"><img src="img/adega-640.webp" srcset="img/adega-640.webp 640w, img/adega-1200.webp 1080w" sizes="(min-width:900px) 40vw, 80vw" alt="Adega climatizada de vidro com espumantes e vinhos brancos" loading="lazy" width="1080" height="837"><figcaption>Adega climatizada</figcaption></figure>
@@ -189,6 +253,6 @@
   <p>Fotos: <a href="https://www.instagram.com/lataverna._/" target="_blank" rel="noopener noreferrer">@lataverna._</a> · Site feito por OFFSET studio</p>
 </footer>
 
-<script src="taverna.js?v=1"></script>
+<script src="taverna.js?v=3"></script>
 </body>
 </html>
