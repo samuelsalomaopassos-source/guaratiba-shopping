@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
 <link rel="preload" href="assets/tex/telha.webp" as="image">
 <link rel="preload" href="assets/tex/madeira.webp" as="image">
-<link rel="stylesheet" href="styles.css?v=27">
+<link rel="stylesheet" href="styles.css?v=28">
 </head>
 <body>
 <a class="skip" href="#diretorio-lista">Pular para a lista de lojas</a>
@@ -39,7 +39,7 @@
     <button class="btn-ghost" id="btnSom" type="button" aria-pressed="false" aria-label="Ligar o som ambiente">
       <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path id="somIco" d="M4 9h4l5-4v14l-5-4H4z M16 9l5 6 M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <button class="btn-lojas" id="btnLojas" type="button" aria-haspopup="dialog" aria-controls="diretorio">Lojas <span id="nLojas">26</span></button>
+    <button class="btn-lojas" id="btnLojas" type="button" aria-haspopup="dialog" aria-controls="diretorio"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5L20 20" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>Busca</button>
   </div>
 </header>
 
@@ -171,15 +171,15 @@
 <div class="diretorio" id="diretorio" role="dialog" aria-modal="true" aria-labelledby="dirTitulo" hidden>
   <div class="dir-painel">
     <div class="dir-topo">
-      <h2 id="dirTitulo">Todas as lojas</h2>
-      <button class="btn-ghost" id="dirFechar" type="button" aria-label="Fechar a lista de lojas">
+      <h2 id="dirTitulo">Do que você precisa?</h2>
+      <button class="btn-ghost" id="dirFechar" type="button" aria-label="Fechar a busca">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
       </button>
     </div>
-    <label class="dir-busca"><span class="sr">Procurar loja ou produto</span>
-      <input id="busca" type="search" placeholder="Açaí, gás, biquíni, pastel…" autocomplete="off">
+    <label class="dir-busca"><span class="sr">Diga do que precisa ou o nome da loja</span>
+      <input id="busca" type="search" placeholder="Protetor solar, presente, jantar…" enterkeyhint="search" autocomplete="off">
     </label>
-    <div id="diretorio-lista" class="dir-lista"></div>
+    <div id="diretorio-lista" class="dir-lista" aria-live="polite"></div>
   </div>
 </div>
 
@@ -192,8 +192,8 @@
   </div>
 </noscript>
 
-<script src="data.js?v=27"></script>
-<script src="sky.js?v=27"></script>
-<script src="app.js?v=27"></script>
+<script src="data.js?v=28"></script>
+<script src="sky.js?v=28"></script>
+<script src="app.js?v=28"></script>
 </body>
 </html>
