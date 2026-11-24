@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
 <link rel="preload" href="assets/tex/telha.webp" as="image">
 <link rel="preload" href="assets/tex/madeira.webp" as="image">
-<link rel="stylesheet" href="styles.css?v=30">
+<link rel="stylesheet" href="styles.css?v=31">
 </head>
 <body>
 <a class="skip" href="#diretorio-lista">Pular para a lista de lojas</a>
@@ -76,6 +76,8 @@
 <!-- Sol e lua (acima da varanda para poderem ser arrastados) -->
 <div class="sun" id="sun" aria-hidden="true"></div>
 
+<!-- palco: piso, capim e varanda numa só camada; a câmera das lojas move só ela (nunca o rolador direto) -->
+<div class="palco" id="palco">
 <!-- piso e capim da frente: fora da varanda para ficarem presos à tela enquanto ela rola -->
 <div class="chao" aria-hidden="true"><div class="chao-plano"></div><div class="chao-escuro"></div></div>
 <div class="grama-frente" id="gramaFrente" aria-hidden="true"></div>
@@ -148,6 +150,7 @@
     </section>
   </div>
 </main>
+</div>
 
 <button class="nav-arrow prev" id="arrPrev" type="button" aria-label="Voltar pela varanda"><span aria-hidden="true">←</span></button>
 <button class="nav-arrow next" id="arrNext" type="button" aria-label="Seguir pela varanda"><span aria-hidden="true">→</span></button>
@@ -192,8 +195,8 @@
   </div>
 </noscript>
 
-<script src="data.js?v=30"></script>
-<script src="sky.js?v=30"></script>
-<script src="app.js?v=30"></script>
+<script src="data.js?v=31"></script>
+<script src="sky.js?v=31"></script>
+<script src="app.js?v=31"></script>
 </body>
 </html>
